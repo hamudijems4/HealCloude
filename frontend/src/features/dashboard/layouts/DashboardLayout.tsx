@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, BookOpen, Activity,
-  PieChart, CheckSquare, Settings, Bell, Search,
+  PieChart, CheckSquare, Settings, Bell, Search, Plus, Mail,
   Users2, Shield, Building2, PackageOpen,
   TrendingUp, HeartPulse, Brain, AlertTriangle,
   MapPin, Smartphone, FlaskConical, Pill
