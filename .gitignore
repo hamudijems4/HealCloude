@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Env secrets — NEVER commit these
+backend/.env
+frontend/.env.local
+
+# Node
+node_modules/
+.next/
+out/
+
+# Docker volumes / OS
+.DS_Store
+*.log
