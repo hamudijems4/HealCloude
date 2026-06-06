@@ -1,0 +1,153 @@
+.kanban-board {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 300px;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface-hover);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+.kanban-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.border-orange { border-bottom-color: var(--color-orange); }
+.border-blue { border-bottom-color: var(--color-blue); }
+.border-green { border-bottom-color: var(--color-green); }
+
+.col-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.col-title-wrapper h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.col-count {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+}
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kanban-card {
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.kanban-column:nth-child(1) .kanban-card:hover { border-left-color: var(--color-orange); }
+.kanban-column:nth-child(2) .kanban-card:hover { border-left-color: var(--color-blue); }
+.kanban-column:nth-child(3) .kanban-card:hover { border-left-color: var(--color-green); }
+
+.k-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.k-card-id {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.k-card-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.k-card-body {
+  margin-bottom: 1rem;
+}
+
+.k-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.k-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.k-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.k-card-btn {
+  color: var(--text-muted);
+  padding: 0.3rem;
+  border-radius: 4px;
+  background: var(--bg-base);
+}
+
+.k-card-btn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.add-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  width: 100%;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.add-card-btn:hover {
+  background: white;
+  color: var(--primary);
+  border-color: var(--primary);
+}

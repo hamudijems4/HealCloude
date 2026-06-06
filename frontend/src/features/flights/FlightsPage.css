@@ -1,0 +1,10 @@
+/* Uses the global data-table styles from index.css or CandidatesPage.css. We can add specific overrides here if necessary. */
+
+.flight-pnr-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-sm {
+  font-size: 0.8rem;
+}
