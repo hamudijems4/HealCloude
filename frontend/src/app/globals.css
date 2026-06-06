@@ -4,38 +4,97 @@
 
 @layer base {
   :root {
-    --radius: 0.625rem;
+    --radius: 12px;
   }
 
-  * {
-    @apply border-gray-800;
+  html {
+    color-scheme: light;
   }
 
   body {
-    @apply bg-gray-950 text-gray-100;
+    @apply bg-surface text-ink-primary antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  ::-webkit-scrollbar {
-    @apply w-1.5;
+  * {
+    @apply border-gray-200;
   }
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-900;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-700 rounded-full;
-  }
+
+  ::-webkit-scrollbar       { @apply w-1.5; }
+  ::-webkit-scrollbar-track { @apply bg-surface; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gray-400; }
 }
 
 @layer components {
-  .glass-card {
-    @apply bg-gray-900/60 backdrop-blur-sm border border-gray-800/60 rounded-xl;
+  /* Card */
+  .card {
+    @apply bg-surface-card rounded-xl shadow-card border border-gray-100;
+  }
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:border-primary-200 transition-all duration-200;
   }
 
+  /* Stat card */
   .stat-card {
-    @apply glass-card p-5 hover:border-brand-700/50 transition-colors duration-200;
+    @apply card p-5;
   }
 
-  .risk-badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border;
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border;
+  }
+  .badge-success { @apply bg-success-light text-success-dark border-success/20; }
+  .badge-warning { @apply bg-warning-light text-warning-dark border-warning/20; }
+  .badge-danger  { @apply bg-danger-light  text-danger-dark  border-danger/20;  }
+  .badge-info    { @apply bg-info-light    text-info-dark    border-info/20;    }
+  .badge-purple  { @apply bg-purple-light  text-purple-dark  border-purple/20;  }
+  .badge-primary { @apply bg-primary-50    text-primary-700  border-primary-200; }
+
+  /* Input */
+  .input {
+    @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm
+           text-ink-primary placeholder-ink-muted
+           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
+           transition-all duration-150;
+  }
+
+  /* Button variants */
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl
+           transition-all duration-150 flex items-center justify-center gap-2 shadow-sm;
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-ink-primary font-semibold px-5 py-2.5 rounded-xl
+           border border-gray-200 transition-all duration-150 flex items-center justify-center gap-2;
+  }
+  .btn-ghost {
+    @apply text-ink-secondary hover:text-primary-500 hover:bg-primary-50 font-medium px-3 py-2 rounded-lg
+           transition-all duration-150 flex items-center gap-2;
+  }
+
+  /* Sidebar nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-secondary
+           hover:bg-primary-50 hover:text-primary-600 transition-all duration-150 cursor-pointer;
+  }
+  .nav-item-active {
+    @apply bg-primary-50 text-primary-600 font-semibold;
+  }
+
+  /* Section heading */
+  .section-title {
+    @apply text-sm font-semibold text-ink-secondary uppercase tracking-wider;
+  }
+
+  /* Table */
+  .table-row {
+    @apply border-b border-gray-100 hover:bg-gray-50/70 transition-colors;
+  }
+  .th {
+    @apply text-left px-4 py-3 text-xs font-semibold text-ink-muted uppercase tracking-wider;
+  }
+  .td {
+    @apply px-4 py-3.5 text-sm text-ink-primary;
   }
 }

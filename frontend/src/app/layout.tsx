@@ -7,13 +7,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 export const metadata = {
   title: "TenaLink — Ethiopia's Health Interoperability Platform",
   description: "AI-driven wellness management and national health surveillance for Ethiopia.",
-  icons: { icon: "/favicon.ico" },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-gray-950 text-gray-100`}>
+    <html lang="en">
+      <body className={`${inter.variable} font-sans bg-surface text-ink-primary`}>
         <Providers>{children}</Providers>
       </body>
     </html>
