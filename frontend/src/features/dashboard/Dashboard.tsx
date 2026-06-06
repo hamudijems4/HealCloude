@@ -12,33 +12,33 @@ import './Dashboard.css';
 
 export const Dashboard: React.FC = () => {
   const stats = [
-    { label: 'Total Clients', value: '3,580', icon: Users, trend: '+ 12.5%', color: 'blue', data: [40, 30, 45, 35, 50, 40, 60] },
-    { label: 'Passports', value: '2,945', icon: BookOpen, trend: '+ 8.3%', color: 'green', data: [30, 40, 35, 50, 45, 55, 65] },
-    { label: 'Visas Processing', value: '1,248', icon: FileText, trend: '+ 5.7%', color: 'purple', data: [20, 30, 25, 35, 30, 40, 45] },
-    { label: 'Upcoming Departures', value: '18', icon: Plane, trend: '+ 20.0%', color: 'orange', data: [10, 15, 12, 18, 15, 20, 25] },
-    { label: 'Revenue (This Month)', value: '$128,430', icon: CreditCard, trend: '+ 15.3%', color: 'red', data: [50, 45, 60, 55, 70, 65, 80] },
+    { label: 'Registered Patients',  value: '2,847,391', icon: Users,       trend: '+ 3.2%',  color: 'blue',   data: [40, 30, 45, 35, 50, 40, 60] },
+    { label: 'Facilities Online',    value: '1,204',     icon: BookOpen,    trend: '+ 1.8%',  color: 'green',  data: [30, 40, 35, 50, 45, 55, 65] },
+    { label: 'AI Interventions Today',value: '14,823',   icon: FileText,    trend: '+ 9.4%',  color: 'purple', data: [20, 30, 25, 35, 30, 40, 45] },
+    { label: 'Active Alerts',        value: '3',         icon: Plane,       trend: '- 2',     color: 'orange', data: [10, 15, 12, 18, 15, 20, 25] },
+    { label: 'Avg Wellness Score',   value: '62.4%',     icon: CreditCard,  trend: '+ 1.4%',  color: 'red',    data: [50, 45, 60, 55, 70, 65, 80] },
   ];
 
   const revenueData = [
-    { name: 'Jan', value: 50 }, { name: 'Feb', value: 80 }, { name: 'Mar', value: 60 },
-    { name: 'Apr', value: 100 }, { name: 'May', value: 128 }, { name: 'Jun', value: 110 },
-    { name: 'Jul', value: 140 }, { name: 'Aug', value: 130 }, { name: 'Sep', value: 160 },
-    { name: 'Oct', value: 150 }, { name: 'Nov', value: 180 }, { name: 'Dec', value: 170 },
+    { name: 'Jan', value: 58 }, { name: 'Feb', value: 61 }, { name: 'Mar', value: 59 },
+    { name: 'Apr', value: 63 }, { name: 'May', value: 62 }, { name: 'Jun', value: 65 },
+    { name: 'Jul', value: 64 }, { name: 'Aug', value: 67 }, { name: 'Sep', value: 66 },
+    { name: 'Oct', value: 69 }, { name: 'Nov', value: 68 }, { name: 'Dec', value: 71 },
   ];
 
   const countryData = [
-    { name: 'Pakistan', value: 45, color: '#3b82f6' },
-    { name: 'India', value: 20, color: '#8b5cf6' },
-    { name: 'Bangladesh', value: 15, color: '#22c55e' },
-    { name: 'Nepal', value: 10, color: '#f59e0b' },
-    { name: 'Others', value: 10, color: '#ef4444' },
+    { name: 'Addis Ababa', value: 35, color: '#3b82f6' },
+    { name: 'Oromia',      value: 28, color: '#8b5cf6' },
+    { name: 'Amhara',      value: 18, color: '#22c55e' },
+    { name: 'SNNPR',       value: 12, color: '#f59e0b' },
+    { name: 'Others',      value: 7,  color: '#ef4444' },
   ];
 
   const visaData = [
-    { name: 'Approved', value: 658, color: '#22c55e' },
-    { name: 'Processing', value: 356, color: '#3b82f6' },
-    { name: 'Pending', value: 134, color: '#f59e0b' },
-    { name: 'Rejected', value: 100, color: '#ef4444' },
+    { name: 'Low Risk',      value: 1240, color: '#22c55e' },
+    { name: 'Medium Risk',   value: 890,  color: '#f59e0b' },
+    { name: 'High Risk',     value: 420,  color: '#ef4444' },
+    { name: 'Critical',      value: 85,   color: '#dc2626' },
   ];
 
   const navigate = useNavigate();
@@ -48,9 +48,10 @@ export const Dashboard: React.FC = () => {
   const [showVisaOptions, setShowVisaOptions] = useState(false);
 
   const [tasks, setTasks] = useState([
-    { id: 1, title: 'Follow up with visa applications', desc: '12 Pending', tag: 'Today', tagColor: 'red', checked: false },
-    { id: 2, title: 'Passport expiry check', desc: '8 Passports', tag: 'Tomorrow', tagColor: 'orange', checked: false },
-    { id: 3, title: 'Confirm hotel bookings', desc: '3 Groups', tag: 'May 26', tagColor: 'blue', checked: false }
+    { id: 1, title: 'Review high-risk patient alerts', desc: '14 flagged today',     tag: 'Urgent',    tagColor: 'red',    checked: false },
+    { id: 2, title: 'Sync Afar region FHIR records',  desc: '3 facilities offline',  tag: 'Today',     tagColor: 'orange', checked: false },
+    { id: 3, title: 'Send TB follow-up SMS nudges',   desc: '87 patients overdue',   tag: 'May 26',    tagColor: 'blue',   checked: false },
+    { id: 4, title: 'Validate Oromia outbreak data',  desc: 'Diarrhea — 342 cases',  tag: 'May 27',    tagColor: 'purple', checked: false },
   ]);
 
   const toggleTask = (id: number) => {
@@ -62,8 +63,8 @@ export const Dashboard: React.FC = () => {
       {/* Header */}
       <div className="dashboard-header">
         <div>
-          <h1 className="welcome-title">Good Morning, Ahmed 👋</h1>
-          <p className="welcome-subtitle">Here's what's happening with your agency today.</p>
+          <h1 className="welcome-title">Good Morning, MoH Analyst 👋</h1>
+          <p className="welcome-subtitle">Here's Ethiopia's national health status for today.</p>
         </div>
         <div style={{ position: 'relative' }}>
           <button className="date-picker-btn card" onClick={() => setShowDatePicker(!showDatePicker)}>
@@ -115,10 +116,10 @@ export const Dashboard: React.FC = () => {
         <div className="chart-card card col-span-2">
           <div className="card-header">
             <div>
-              <h3>Revenue Overview</h3>
+              <h3>National Wellness Trend</h3>
               <div className="revenue-total">
-                <h2>$1,482,430</h2>
-                <span className="text-green text-sm font-medium">↑ 18.6% vs last year</span>
+                <h2>62.4%</h2>
+                <span className="text-green text-sm font-medium">↑ 1.4% vs last month</span>
               </div>
             </div>
             <div style={{ position: 'relative' }}>
@@ -155,7 +156,7 @@ export const Dashboard: React.FC = () => {
         {/* Clients by Country */}
         <div className="chart-card card">
           <div className="card-header">
-            <h3>Clients by Country</h3>
+            <h3>Patients by Region</h3>
             <div style={{ position: 'relative' }}>
               <button className="dropdown-btn" onClick={() => setShowCountryDropdown(!showCountryDropdown)}>
                 All Countries <ChevronDown size={14} />
@@ -170,7 +171,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div className="donut-chart-wrapper">
             <div className="donut-inner">
-              <h2>3,580</h2>
+              <h2>2.8M</h2>
               <span>Total</span>
             </div>
             <ResponsiveContainer width="100%" height={200}>
@@ -195,7 +196,7 @@ export const Dashboard: React.FC = () => {
         {/* Visa Status Overview */}
         <div className="chart-card card">
           <div className="card-header">
-            <h3>Visa Status Overview</h3>
+            <h3>Wellness Risk Overview</h3>
             <div style={{ position: 'relative' }}>
               <button className="icon-btn" onClick={() => setShowVisaOptions(!showVisaOptions)}>
                 <MoreHorizontal size={18} />
@@ -210,8 +211,8 @@ export const Dashboard: React.FC = () => {
           </div>
           <div className="donut-chart-wrapper">
             <div className="donut-inner">
-              <h2>1,248</h2>
-              <span>Total Visas</span>
+              <h2>2,635</h2>
+              <span>Assessed</span>
             </div>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
@@ -238,29 +239,32 @@ export const Dashboard: React.FC = () => {
         {/* Upcoming Departures */}
         <div className="widget-card card col-span-2">
           <div className="card-header">
-            <h3>Upcoming Departures</h3>
-            <button className="view-all-btn" onClick={() => navigate('/dashboard/flights')}>View All</button>
+            <h3>Active Disease Alerts</h3>
+            <button className="view-all-btn" onClick={() => navigate('/dashboard/alerts')}>View All</button>
           </div>
           <div className="list-group">
-            {[1, 2, 3, 4].map((_, i) => (
+            {[
+              { region: 'Oromia', zone: 'East Hararghe', disease: 'Diarrhea',     cases: 342, severity: 'warning', day: 'MAY', date: 24 },
+              { region: 'Afar',   zone: 'Zone 1',        disease: 'Malaria',      cases: 89,  severity: 'watch',   day: 'MAY', date: 25 },
+              { region: 'Tigray', zone: 'South Tigray',  disease: 'Tuberculosis', cases: 27,  severity: 'emergency', day: 'MAY', date: 23 },
+              { region: 'SNNPR',  zone: 'Wolayita',      disease: 'Cholera',      cases: 14,  severity: 'watch',   day: 'MAY', date: 22 },
+            ].map((alert, i) => (
               <div key={i} className="list-item">
                 <div className="list-date">
-                  <span className="month">MAY</span>
-                  <span className="day">{25 + i}</span>
+                  <span className="month">{alert.day}</span>
+                  <span className="day">{alert.date}</span>
                 </div>
                 <div className="list-details">
-                  <h4>Umrah Group - May 2025</h4>
+                  <h4>{alert.disease} — {alert.region}</h4>
                   <div className="list-meta">
-                    <span>👥 32 People</span>
-                    <span>📍 Jeddah, Saudi Arabia</span>
+                    <span>📍 {alert.zone}</span>
+                    <span>🦠 {alert.cases} cases</span>
                   </div>
                 </div>
                 <div className="list-flight">
-                  <div className="airline-logo bg-green-light text-green">✈️</div>
-                  <div className="flight-info">
-                    <span className="flight-no">SV 245</span>
-                    <span className="flight-time">10:30 AM</span>
-                  </div>
+                  <span className={`task-tag text-${ alert.severity === 'emergency' ? 'red' : alert.severity === 'warning' ? 'orange' : 'blue' }`}>
+                    {alert.severity}
+                  </span>
                 </div>
                 <ChevronDown size={18} className="list-chevron" style={{ transform: 'rotate(-90deg)' }} />
               </div>
@@ -279,30 +283,30 @@ export const Dashboard: React.FC = () => {
               <div className="timeline-icon bg-blue-light text-blue"><Users size={14} /></div>
               <div className="timeline-content">
                 <div className="timeline-header">
-                  <h4>New client registered</h4>
+                  <h4>New patient registered</h4>
                   <span>10 min ago</span>
                 </div>
-                <p>Ali Raza has been added as a new client.</p>
+                <p>Abebe Haile (ET8823710293) registered via Fayda ID.</p>
               </div>
             </div>
             <div className="timeline-item">
               <div className="timeline-icon bg-purple-light text-purple"><FileText size={14} /></div>
               <div className="timeline-content">
                 <div className="timeline-header">
-                  <h4>Visa approved</h4>
+                  <h4>High risk score flagged</h4>
                   <span>1 hour ago</span>
                 </div>
-                <p>Visa for Muhammad Ahmed has been approved.</p>
+                <p>Patient Tigist Bekele scored 78/100 — AI sent SMS nudge.</p>
               </div>
             </div>
             <div className="timeline-item">
               <div className="timeline-icon bg-green-light text-green"><CreditCard size={14} /></div>
               <div className="timeline-content">
                 <div className="timeline-header">
-                  <h4>Payment received</h4>
+                  <h4>FHIR record synced</h4>
                   <span>2 hours ago</span>
                 </div>
-                <p>Payment of $1,250 received from Sarah Khan.</p>
+                <p>Tikur Anbessa Hospital synced 42 new FHIR records.</p>
               </div>
             </div>
           </div>
