@@ -1,121 +1,91 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Animated, Easing } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { MotiView } from 'moti';
+import { Bell, Globe, Fingerprint, Lock, HelpCircle, LogOut, ChevronRight, Edit3, ShieldCheck } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../theme';
 
-export default function ProfileScreen() {
+const settingsRows = [
+  { icon: Bell, label: 'Push notification', type: 'toggle', key: 'notif' },
+  { icon: Globe, label: 'Language', type: 'value', value: 'English >', key: 'lang' },
+  { icon: Fingerprint, label: 'Face ID', type: 'toggle', key: 'faceId' },
+  { icon: Lock, label: 'Change password', type: 'nav', key: 'pass' },
+  { icon: HelpCircle, label: 'Help center', type: 'nav', key: 'help' },
+];
+
+export default function ProfileScreen({ navigation }: { navigation: any }) {
   const { profile, logout } = useAuth();
-  const [riskScore, setRiskScore] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [toggles, setToggles] = useState({ notif: true, faceId: false });
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-
-  useEffect(() => {
-    loadRiskScore();
-    Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.spring(scaleAnim, { toValue: 1, friction: 6, tension: 40, useNativeDriver: true })
-    ]).start();
-  }, []);
-
-  const loadRiskScore = async () => {
-    if (!profile?.id) return;
-    setLoading(true);
-    try {
-      const data = await api.getRiskScore(profile.id);
-      setRiskScore(data);
-    } catch (error) {
-      setRiskScore({ score: 92, level: 'EXCELLENT', recommendations: ['Continue regular exercise', 'Maintain balanced diet, rich in folic acid', 'Stay hydrated'] });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getScoreColors = (level: string) => {
-    switch (level) {
-      case 'EXCELLENT': return ['#10b981', '#059669'];
-      case 'MEDIUM': return ['#f59e0b', '#d97706'];
-      case 'HIGH': return ['#ef4444', '#b91c1c'];
-      default: return ['#3b82f6', '#2563eb'];
-    }
-  };
+  const flip = (key: string) => setToggles(p => ({ ...p, [key]: !p[key as keyof typeof p] }));
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#eef2ff', '#e0e7ff', '#c7d2fe']} style={StyleSheet.absoluteFill} />
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }], alignItems: 'center', marginTop: 80, marginBottom: 40 }}>
-          <View style={styles.avatarWrapper}>
-            <LinearGradient colors={['#5c59f0', '#8b5cf6']} style={styles.avatarGradient}>
-              <Text style={styles.avatarText}>{profile?.full_name?.charAt(0) || 'U'}</Text>
-            </LinearGradient>
-          </View>
-          <Text style={styles.name}>{profile?.full_name}</Text>
-          <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>{profile?.role?.replace('_', ' ')}</Text>
-          </View>
-        </Animated.View>
-
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-          <BlurView intensity={70} tint="light" style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Wellness Overview</Text>
-            
-            {loading ? (
-              <ActivityIndicator size="large" color="#5c59f0" style={{ marginVertical: 40 }} />
-            ) : riskScore ? (
-              <View style={styles.scoreContainer}>
-                <View style={styles.scoreDialWrapper}>
-                  <LinearGradient colors={getScoreColors(riskScore.level) as [string, string]} style={styles.scoreDialGradient}>
-                    <View style={styles.scoreDialInner}>
-                      <Text style={styles.scoreNumber}>{riskScore.score}</Text>
-                      <Text style={styles.scoreLevel}>{riskScore.level}</Text>
-                    </View>
-                  </LinearGradient>
-                </View>
-
-                <View style={styles.recommendationsList}>
-                  {riskScore.recommendations?.map((rec: string, i: number) => (
-                    <View key={i} style={styles.recItem}>
-                      <Text style={styles.recIcon}>✨</Text>
-                      <Text style={styles.recText}>{rec}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            ) : null}
-          </BlurView>
-
-          <BlurView intensity={70} tint="light" style={[styles.sectionCard, { marginTop: 20 }]}>
-            <Text style={styles.sectionTitle}>Personal Details</Text>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Fayda ID</Text>
-              <Text style={styles.infoValue}>{profile?.fayda_id || 'Not set'}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Phone Number</Text>
-              <Text style={styles.infoValue}>{profile?.phone || '+251 911 234 567'}</Text>
-            </View>
-            <View style={[styles.infoRow, { borderBottomWidth: 0, paddingBottom: 0 }]}>
-              <Text style={styles.infoLabel}>Account Status</Text>
-              <View style={styles.statusPill}>
-                <Text style={styles.statusPillText}>{profile?.is_active ? 'Active' : 'Inactive'}</Text>
-              </View>
-            </View>
-          </BlurView>
-
-          <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-            <LinearGradient colors={['#ef4444', '#b91c1c']} style={styles.logoutGradient}>
-              <Text style={styles.logoutText}>Sign Out Securely</Text>
-            </LinearGradient>
+        {/* Header */}
+        <MotiView from={{ opacity: 0, translateY: -12 }} animate={{ opacity: 1, translateY: 0 }} style={styles.header}>
+          <Text style={styles.headerTitle}>Settings</Text>
+          <TouchableOpacity style={styles.editBtn}>
+            <Edit3 size={18} color={COLORS.text} />
           </TouchableOpacity>
-        </Animated.View>
+        </MotiView>
+
+        {/* Profile Card */}
+        <MotiView from={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', delay: 200 }} style={styles.profileCard}>
+          <LinearGradient colors={[COLORS.primary, COLORS.secondary]} style={styles.avatarGradient}>
+            <Text style={styles.avatarText}>{profile?.full_name?.charAt(0) || 'B'}</Text>
+          </LinearGradient>
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>{profile?.full_name || 'Beatrice Cox'}</Text>
+            <Text style={styles.profileSub}>{profile?.phone || 'coc17@payments.me'}</Text>
+          </View>
+          <View style={styles.verifiedBadge}>
+            <ShieldCheck size={14} color={COLORS.accent} />
+          </View>
+        </MotiView>
+
+        {/* Settings Rows */}
+        <MotiView from={{ opacity: 0, translateY: 16 }} animate={{ opacity: 1, translateY: 0 }} transition={{ delay: 400 }} style={styles.settingsCard}>
+          {settingsRows.map((row, i) => (
+            <View key={row.key}>
+              <TouchableOpacity
+                style={styles.settingRow}
+                onPress={() => row.type === 'toggle' ? flip(row.key) : undefined}
+                activeOpacity={row.type === 'nav' ? 0.6 : 1}
+              >
+                <View style={styles.settingIcon}>
+                  <row.icon size={18} color={COLORS.primary} />
+                </View>
+                <Text style={styles.settingLabel}>{row.label}</Text>
+                {row.type === 'toggle' && (
+                  <Switch
+                    value={toggles[row.key as keyof typeof toggles]}
+                    onValueChange={() => flip(row.key)}
+                    trackColor={{ false: COLORS.cardAlt, true: COLORS.primary }}
+                    thumbColor={COLORS.white}
+                  />
+                )}
+                {row.type === 'value' && (
+                  <Text style={styles.settingValue}>{row.value}</Text>
+                )}
+                {row.type === 'nav' && (
+                  <ChevronRight size={18} color={COLORS.textMuted} />
+                )}
+              </TouchableOpacity>
+              {i < settingsRows.length - 1 && <View style={styles.divider} />}
+            </View>
+          ))}
+        </MotiView>
+
+        {/* Sign Out */}
+        <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 600 }}>
+          <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+            <LogOut size={20} color={COLORS.danger} />
+            <Text style={styles.logoutText}>Sign Out Securely</Text>
+          </TouchableOpacity>
+        </MotiView>
 
       </ScrollView>
     </View>
@@ -123,32 +93,27 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f6f8' },
-  scrollContent: { flexGrow: 1, padding: 24, paddingBottom: 60 },
-  avatarWrapper: { width: 120, height: 120, borderRadius: 40, overflow: 'hidden', shadowColor: '#5c59f0', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.4, shadowRadius: 24, elevation: 10, marginBottom: 20, borderWidth: 2, borderColor: '#ffffff' },
-  avatarGradient: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 52, fontWeight: '800', color: '#ffffff', fontFamily: 'Outfit' },
-  name: { fontSize: 32, fontWeight: '800', color: '#1e293b', fontFamily: 'Outfit', letterSpacing: -0.5 },
-  roleBadge: { backgroundColor: 'rgba(92, 89, 240, 0.1)', paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, marginTop: 12 },
-  roleText: { fontSize: 13, fontWeight: '800', color: '#5c59f0', fontFamily: 'Inter', letterSpacing: 1, textTransform: 'uppercase' },
-  sectionCard: { borderRadius: 32, padding: 24, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)', backgroundColor: 'rgba(255,255,255,0.4)', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 20 },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: '#1e293b', fontFamily: 'Outfit', marginBottom: 24 },
-  scoreContainer: { alignItems: 'center' },
-  scoreDialWrapper: { width: 180, height: 180, borderRadius: 90, overflow: 'hidden', marginBottom: 32, shadowColor: '#10b981', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.3, shadowRadius: 20, elevation: 8 },
-  scoreDialGradient: { flex: 1, padding: 8 },
-  scoreDialInner: { flex: 1, backgroundColor: '#ffffff', borderRadius: 82, alignItems: 'center', justifyContent: 'center' },
-  scoreNumber: { fontSize: 56, fontWeight: '900', color: '#1e293b', fontFamily: 'Outfit', letterSpacing: -2, marginTop: 10 },
-  scoreLevel: { fontSize: 14, fontWeight: '800', color: '#10b981', fontFamily: 'Inter', letterSpacing: 1, textTransform: 'uppercase' },
-  recommendationsList: { width: '100%', backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 24, padding: 20 },
-  recItem: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
-  recIcon: { fontSize: 16, marginRight: 12, marginTop: 2 },
-  recText: { flex: 1, fontSize: 14, color: '#475569', fontFamily: 'Inter', lineHeight: 22, fontWeight: '500' },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0,0.05)' },
-  infoLabel: { fontSize: 15, color: '#64748b', fontFamily: 'Inter', fontWeight: '500' },
-  infoValue: { fontSize: 15, color: '#1e293b', fontFamily: 'Inter', fontWeight: '700' },
-  statusPill: { backgroundColor: '#dcfce7', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
-  statusPillText: { color: '#16a34a', fontSize: 13, fontWeight: '800', fontFamily: 'Inter' },
-  logoutButton: { marginTop: 32, borderRadius: 24, overflow: 'hidden', shadowColor: '#ef4444', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 5 },
-  logoutGradient: { paddingVertical: 18, alignItems: 'center', justifyContent: 'center' },
-  logoutText: { color: '#ffffff', fontSize: 16, fontWeight: '800', fontFamily: 'Inter', letterSpacing: 0.5 }
+  container: { flex: 1, backgroundColor: COLORS.background },
+  scroll: { padding: SPACING.lg, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 110 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.xl },
+  headerTitle: { fontSize: 24, fontWeight: '800', color: COLORS.text },
+  editBtn: { width: 40, height: 40, backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.md, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
+
+  profileCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.xl, borderWidth: 1, borderColor: COLORS.border, gap: 16 },
+  avatarGradient: { width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', ...SHADOWS.medium },
+  avatarText: { fontSize: 24, fontWeight: '800', color: COLORS.white },
+  profileInfo: { flex: 1 },
+  profileName: { fontSize: 18, fontWeight: '800', color: COLORS.text },
+  profileSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
+  verifiedBadge: { width: 32, height: 32, backgroundColor: COLORS.successLight, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
+
+  settingsCard: { backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.xl, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden', marginBottom: SPACING.xl },
+  settingRow: { flexDirection: 'row', alignItems: 'center', padding: SPACING.lg, gap: 14 },
+  settingIcon: { width: 36, height: 36, backgroundColor: COLORS.primaryLight, borderRadius: BORDER_RADIUS.md, justifyContent: 'center', alignItems: 'center' },
+  settingLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: COLORS.text },
+  settingValue: { fontSize: 14, color: COLORS.textMuted, fontWeight: '600' },
+  divider: { height: 1, backgroundColor: COLORS.border, marginHorizontal: SPACING.lg },
+
+  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.dangerLight, borderRadius: BORDER_RADIUS.xl, paddingVertical: SPACING.lg, gap: 10, borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.2)' },
+  logoutText: { fontSize: 16, fontWeight: '700', color: COLORS.danger },
 });

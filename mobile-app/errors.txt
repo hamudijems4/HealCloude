@@ -1,0 +1,10 @@
+src/screens/ChatScreen.tsx(87,73): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?
+src/screens/DashboardScreen.tsx(45,84): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?
+src/screens/DashboardScreen.tsx(71,131): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?
+src/screens/LoginScreen.tsx(29,118): error TS2551: Property 'sine' does not exist on type 'EasingStatic'. Did you mean 'sin'?
+src/screens/LoginScreen.tsx(30,118): error TS2551: Property 'sine' does not exist on type 'EasingStatic'. Did you mean 'sin'?
+src/screens/LoginScreen.tsx(36,118): error TS2551: Property 'sine' does not exist on type 'EasingStatic'. Did you mean 'sin'?
+src/screens/LoginScreen.tsx(37,118): error TS2551: Property 'sine' does not exist on type 'EasingStatic'. Did you mean 'sin'?
+src/screens/LoginScreen.tsx(58,84): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?
+src/screens/ProfileScreen.tsx(50,84): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?
+src/screens/RecordsScreen.tsx(30,73): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?

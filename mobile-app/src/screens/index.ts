@@ -4,4 +4,12 @@ import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import RecordsScreen from './RecordsScreen';
 
-export { LoginScreen, DashboardScreen, ChatScreen, ProfileScreen, RecordsScreen };
+export { 
+  LoginScreen, 
+  DashboardScreen, 
+  ChatScreen, 
+  ProfileScreen, 
+  RecordsScreen
+};
+
+

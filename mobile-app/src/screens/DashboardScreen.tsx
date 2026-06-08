@@ -1,177 +1,270 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Animated, Easing } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import { useAuth } from '../context/AuthContext';
-import { PregnancyMilestone } from '../types';
+import { MotiView, AnimatePresence } from 'moti';
+import { Bell, Plus, ChevronRight, Heart, Activity, Calendar, MessageCircle, TrendingUp, Award, Stethoscope, Clock, Star } from 'lucide-react-native';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../theme';
 
 const { width } = Dimensions.get('window');
 
-const mockMilestones: PregnancyMilestone[] = [
-  { id: '1', title: 'First Trimester Screening', date: 'Completed • 12 Weeks', status: 'COMPLETED', type: 'SCAN' },
-  { id: '2', title: 'Anatomy Scan (Detailed)', date: 'Completed • 20 Weeks', status: 'COMPLETED', type: 'SCAN' },
-  { id: '3', title: 'Glucose Tolerance Test', date: '24 Jun 2026 • 24 Weeks', status: 'UPCOMING', type: 'GENERAL' },
-  { id: '4', title: 'Third Trimester Checkup', date: '15 Jul 2026 • 28 Weeks', status: 'UPCOMING', type: 'CHECKUP' }
+const clinicians = [
+  { id: '1', name: 'Dr. Tsige Abebe', specialty: 'OB/GYN', slots: 3, available: true },
+  { id: '2', name: 'Dr. Yared Shimeles', specialty: 'Maternal Health', slots: 1, available: true },
+  { id: '3', name: 'Dr. Kenenisa D.', specialty: 'Pediatric', slots: 0, available: false },
 ];
 
-export default function DashboardScreen() {
-  const { profile } = useAuth();
-  const currentWeek = 22;
+const recentActivity = [
+  { id: '1', title: 'Starbucks Coffee', sub: 'Fast food', amount: '-$44.80', icon: '☕' },
+  { id: '2', title: 'Amazon', sub: 'Marketplace', amount: '-$104.80', icon: '📦' },
+  { id: '3', title: 'Prenatal Checkup', sub: 'Tikur Anbessa', amount: 'Done', icon: '🏥' },
+];
 
-  // Animations
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
-  const progressAnim = useRef(new Animated.Value(0)).current;
-  const listAnims = useRef(mockMilestones.map(() => new Animated.Value(0))).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.timing(progressAnim, { toValue: (currentWeek / 40) * 100, duration: 1500, delay: 300, useNativeDriver: false, easing: Easing.out(Easing.cubic) })
-    ]).start();
-
-    Animated.stagger(150, listAnims.map(anim => 
-      Animated.timing(anim, { toValue: 1, duration: 500, useNativeDriver: true, easing: Easing.out(Easing.cubic) })
-    )).start();
-  }, []);
-
-  const getMilestoneIcon = (type: string) => {
-    switch(type) { case 'SCAN': return '🖼️'; case 'LAB_RESULT': return '🧪'; case 'CHECKUP': return '🩺'; default: return '📅'; }
-  };
+export default function DashboardScreen({ navigation }: { navigation: any }) {
+  const [activeTab, setActiveTab] = useState<'home' | 'doctors'>('home');
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#f8fafc', '#e2e8f0', '#cbd5e1']} style={StyleSheet.absoluteFill} />
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-          <LinearGradient colors={['rgba(92, 89, 240, 0.9)', 'rgba(139, 92, 246, 0.9)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.header}>
-            <View style={styles.headerTop}>
-              <View>
-                <Text style={styles.greeting}>Good morning,</Text>
-                <Text style={styles.name}>{profile?.full_name || 'Selamawit'}</Text>
+        {/* Header */}
+        <MotiView from={{ opacity: 0, translateY: -16 }} animate={{ opacity: 1, translateY: 0 }} style={styles.header}>
+          <View>
+            <Text style={styles.welcomeText}>Welcome, 👋</Text>
+            <Text style={styles.userName}>Beatrice Cox</Text>
+          </View>
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Bell size={20} color={COLORS.text} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.avatarBtn}>
+              <Text style={styles.avatarInitial}>B</Text>
+            </TouchableOpacity>
+          </View>
+        </MotiView>
+
+        {/* Balance Card */}
+        <MotiView
+          from={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', delay: 200 }}
+          style={styles.balanceCard}
+        >
+          <View style={styles.balanceRow}>
+            <View>
+              <Text style={styles.balanceLabel}>Your balance</Text>
+              <Text style={styles.balanceAmount}>$8,987.00</Text>
+            </View>
+            <TouchableOpacity style={styles.addMoneyBtn}>
+              <Plus size={16} color={COLORS.white} />
+              <Text style={styles.addMoneyText}>Add money</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Tab switcher inside card */}
+          <View style={styles.cardTabs}>
+            {(['home', 'doctors'] as const).map(tab => (
+              <TouchableOpacity
+                key={tab}
+                onPress={() => setActiveTab(tab)}
+                style={[styles.cardTab, activeTab === tab && styles.cardTabActive]}
+              >
+                <Text style={[styles.cardTabText, activeTab === tab && styles.cardTabTextActive]}>
+                  {tab === 'home' ? 'Overview' : 'Doctors'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </MotiView>
+
+        <AnimatePresence>
+          {activeTab === 'home' ? (
+            <MotiView key="home" from={{ opacity: 0, translateX: -10 }} animate={{ opacity: 1, translateX: 0 }} transition={{ type: 'timing', duration: 350 }}>
+
+              {/* Your Cards */}
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Your cards</Text>
+                <TouchableOpacity style={styles.newCardBtn}>
+                  <Plus size={14} color={COLORS.primary} />
+                  <Text style={styles.newCardText}>New card</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.profileBtn}>
-                <Text style={styles.profileBtnText}>{profile?.full_name?.charAt(0) || 'S'}</Text>
-              </TouchableOpacity>
-            </View>
 
-            <View style={styles.progressCardContainer}>
-              <BlurView intensity={40} tint="light" style={styles.progressCard}>
-                <View style={styles.progressHeader}>
-                  <Text style={styles.progressTitle}>Week {currentWeek} of Pregnancy</Text>
-                  <View style={styles.trimesterBadge}>
-                    <Text style={styles.trimesterText}>2nd Trimester</Text>
-                  </View>
-                </View>
-                
-                <View style={styles.progressBarContainer}>
-                  <Animated.View style={[styles.progressBarFill, { width: progressAnim.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] }) }]}>
-                    <LinearGradient colors={['#ffffff', '#eef2ff']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
-                  </Animated.View>
-                </View>
-                
-                <View style={styles.babyUpdate}>
-                  <View style={styles.babyUpdateIconBg}><Text style={styles.babyUpdateIcon}>👶</Text></View>
-                  <Text style={styles.babyUpdateText}>Your baby is about the size of a papaya.</Text>
-                </View>
-              </BlurView>
-            </View>
-          </LinearGradient>
-        </Animated.View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cardsScroll}>
+                {/* Main Health Card */}
+                <MotiView from={{ opacity: 0, translateY: 20 }} animate={{ opacity: 1, translateY: 0 }} transition={{ delay: 300 }}>
+                  <LinearGradient colors={['#3A59FF', '#6C63FF', '#A78BFA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.healthCard}>
+                    <View style={styles.cardTopRow}>
+                      <Text style={styles.cardBalanceLabel}>$2,986.12</Text>
+                      <View style={styles.cardChip} />
+                    </View>
+                    <Text style={styles.cardNumber}>**** **** **** 4291</Text>
+                    <View style={styles.cardBottomRow}>
+                      <Text style={styles.cardDetails}>Card details</Text>
+                      <ChevronRight size={16} color="rgba(255,255,255,0.7)" />
+                    </View>
+                    {/* Decorative circles */}
+                    <View style={[styles.cardCircle, { width: 100, height: 100, top: -30, right: -20, opacity: 0.15 }]} />
+                    <View style={[styles.cardCircle, { width: 70, height: 70, top: 10, right: 50, opacity: 0.1 }]} />
+                  </LinearGradient>
+                </MotiView>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Journey Timeline</Text>
-          <View style={styles.timelineContainer}>
-            {mockMilestones.map((milestone, index) => (
-              <Animated.View key={milestone.id} style={[styles.timelineItem, { opacity: listAnims[index], transform: [{ translateY: listAnims[index].interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }]}>
-                <View style={styles.timelineLeft}>
-                  <View style={[styles.timelineDot, milestone.status === 'COMPLETED' ? styles.timelineDotCompleted : styles.timelineDotUpcoming]}>
-                    {milestone.status === 'COMPLETED' && <Text style={styles.checkIcon}>✓</Text>}
-                  </View>
-                  {index < mockMilestones.length - 1 && <View style={[styles.timelineLine, milestone.status === 'COMPLETED' ? styles.timelineLineCompleted : styles.timelineLineUpcoming]} />}
-                </View>
-                
-                <View style={[styles.timelineCard, milestone.status === 'COMPLETED' ? styles.timelineCardCompleted : styles.timelineCardUpcoming]}>
-                  <View style={[styles.timelineIconContainer, milestone.status === 'UPCOMING' && { backgroundColor: 'rgba(255,255,255,0.5)' }]}>
-                    <Text style={styles.timelineIcon}>{getMilestoneIcon(milestone.type)}</Text>
-                  </View>
-                  <View style={styles.timelineContent}>
-                    <Text style={styles.timelineCardTitle}>{milestone.title}</Text>
-                    <Text style={styles.timelineCardDate}>{milestone.date}</Text>
-                  </View>
-                </View>
-              </Animated.View>
-            ))}
-          </View>
-        </View>
+                {/* Second Card */}
+                <MotiView from={{ opacity: 0, translateY: 20 }} animate={{ opacity: 1, translateY: 0 }} transition={{ delay: 400 }} style={{ marginLeft: 16 }}>
+                  <LinearGradient colors={['#1E293B', '#334155']} style={[styles.healthCard, { opacity: 0.85 }]}>
+                    <View style={styles.cardTopRow}>
+                      <Text style={styles.cardBalanceLabel}>$1,240.00</Text>
+                      <View style={[styles.cardChip, { backgroundColor: 'rgba(255,255,255,0.2)' }]} />
+                    </View>
+                    <Text style={styles.cardNumber}>**** **** **** 7823</Text>
+                    <View style={styles.cardBottomRow}>
+                      <Text style={styles.cardDetails}>Card details</Text>
+                      <ChevronRight size={16} color="rgba(255,255,255,0.7)" />
+                    </View>
+                  </LinearGradient>
+                </MotiView>
+              </ScrollView>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Access</Text>
-          <View style={styles.quickAccessGrid}>
-            {[
-              { icon: '🍎', title: 'Diet Plan', color: ['#eef2ff', '#c7d2fe'] },
-              { icon: '🩸', title: 'Symptoms', color: ['#fee2e2', '#fecaca'] },
-              { icon: '🧘‍♀️', title: 'Exercises', color: ['#dcfce7', '#bbf7d0'] }
-            ].map((qa, i) => (
-              <TouchableOpacity key={i} style={styles.qaCardWrapper}>
-                <LinearGradient colors={qa.color as [string, string]} style={styles.qaCardGradient}>
-                  <Text style={styles.qaIcon}>{qa.icon}</Text>
-                  <Text style={styles.qaTitle}>{qa.title}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+              {/* Transfer Section */}
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Transfer</Text>
+                <TouchableOpacity>
+                  <Text style={styles.seeAllText}>See all</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: SPACING.lg }}>
+                {['👩🏾', '👨🏽', '👩🏻', '👨🏿', '👩🏼'].map((emoji, i) => (
+                  <MotiView key={i} from={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 400 + i * 80, type: 'spring' }}>
+                    <TouchableOpacity style={styles.transferAvatar}>
+                      <Text style={{ fontSize: 24 }}>{emoji}</Text>
+                    </TouchableOpacity>
+                  </MotiView>
+                ))}
+                <MotiView from={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 800, type: 'spring' }}>
+                  <TouchableOpacity style={[styles.transferAvatar, styles.transferAvatarAdd]}>
+                    <Plus size={20} color={COLORS.primary} />
+                  </TouchableOpacity>
+                </MotiView>
+              </ScrollView>
+
+              {/* Recent Transactions */}
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Recent transactions</Text>
+                <TouchableOpacity>
+                  <Text style={styles.seeAllText}>See all</Text>
+                </TouchableOpacity>
+              </View>
+
+              {recentActivity.map((item, i) => (
+                <MotiView
+                  key={item.id}
+                  from={{ opacity: 0, translateX: -16 }}
+                  animate={{ opacity: 1, translateX: 0 }}
+                  transition={{ delay: 500 + i * 100 }}
+                  style={styles.txRow}
+                >
+                  <View style={styles.txIcon}>
+                    <Text style={{ fontSize: 22 }}>{item.icon}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.txTitle}>{item.title}</Text>
+                    <Text style={styles.txSub}>{item.sub}</Text>
+                  </View>
+                  <Text style={[styles.txAmount, item.amount === 'Done' && { color: COLORS.accent }]}>
+                    {item.amount}
+                  </Text>
+                </MotiView>
+              ))}
+            </MotiView>
+          ) : (
+            <MotiView key="doctors" from={{ opacity: 0, translateX: 10 }} animate={{ opacity: 1, translateX: 0 }} transition={{ type: 'timing', duration: 350 }}>
+              <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>Available Specialists</Text>
+              {clinicians.map((doc, i) => (
+                <MotiView
+                  key={doc.id}
+                  from={{ opacity: 0, translateY: 16 }}
+                  animate={{ opacity: 1, translateY: 0 }}
+                  transition={{ delay: 200 + i * 100 }}
+                  style={styles.doctorCard}
+                >
+                  <View style={styles.doctorAvatar}>
+                    <Stethoscope size={22} color={doc.available ? COLORS.accent : COLORS.textMuted} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.doctorName}>{doc.name}</Text>
+                    <Text style={styles.doctorSpec}>{doc.specialty}</Text>
+                  </View>
+                  <TouchableOpacity
+                    disabled={!doc.available}
+                    style={[styles.bookBtn, !doc.available && { backgroundColor: COLORS.cardAlt }]}
+                  >
+                    <Text style={[styles.bookBtnText, !doc.available && { color: COLORS.textMuted }]}>
+                      {doc.available ? `Book (${doc.slots})` : 'Full'}
+                    </Text>
+                  </TouchableOpacity>
+                </MotiView>
+              ))}
+            </MotiView>
+          )}
+        </AnimatePresence>
+
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { padding: 24, paddingTop: 60, borderBottomLeftRadius: 40, borderBottomRightRadius: 40, shadowColor: '#5c59f0', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 20, elevation: 10 },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 },
-  greeting: { fontSize: 16, color: 'rgba(255,255,255,0.8)', fontFamily: 'Inter', letterSpacing: 0.5 },
-  name: { fontSize: 32, fontWeight: '800', color: '#ffffff', fontFamily: 'Outfit', marginTop: 2, letterSpacing: -0.5 },
-  profileBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
-  profileBtnText: { fontSize: 20, fontWeight: '700', color: '#ffffff' },
-  progressCardContainer: { borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', marginBottom: -50 },
-  progressCard: { padding: 24, backgroundColor: 'rgba(255,255,255,0.15)' },
-  progressHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  progressTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', fontFamily: 'Outfit' },
-  trimesterBadge: { backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
-  trimesterText: { fontSize: 12, fontWeight: '700', color: '#ffffff', fontFamily: 'Inter' },
-  progressBarContainer: { height: 12, backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 6, overflow: 'hidden', marginBottom: 20 },
-  progressBarFill: { height: '100%', borderRadius: 6, overflow: 'hidden' },
-  babyUpdate: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', padding: 12, borderRadius: 16 },
-  babyUpdateIconBg: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-  babyUpdateIcon: { fontSize: 18 },
-  babyUpdateText: { flex: 1, fontSize: 14, color: '#ffffff', fontFamily: 'Inter', fontWeight: '500' },
-  section: { padding: 24, paddingTop: 40 },
-  sectionTitle: { fontSize: 22, fontWeight: '800', color: '#1e293b', fontFamily: 'Outfit', marginBottom: 24, letterSpacing: -0.5 },
-  timelineContainer: { paddingLeft: 8 },
-  timelineItem: { flexDirection: 'row', marginBottom: 24 },
-  timelineLeft: { width: 30, alignItems: 'center', marginRight: 16 },
-  timelineDot: { width: 24, height: 24, borderRadius: 12, borderWidth: 3, alignItems: 'center', justifyContent: 'center', zIndex: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
-  timelineDotCompleted: { backgroundColor: '#5c59f0', borderColor: '#ffffff' },
-  timelineDotUpcoming: { backgroundColor: '#ffffff', borderColor: '#cbd5e1' },
-  checkIcon: { color: '#ffffff', fontSize: 10, fontWeight: '900' },
-  timelineLine: { width: 2, flex: 1, position: 'absolute', top: 24, bottom: -24, zIndex: 1 },
-  timelineLineCompleted: { backgroundColor: '#5c59f0' },
-  timelineLineUpcoming: { backgroundColor: '#cbd5e1' },
-  timelineCard: { flex: 1, flexDirection: 'row', padding: 16, borderRadius: 20 },
-  timelineCardCompleted: { backgroundColor: 'rgba(255,255,255,0.9)', shadowColor: '#5c59f0', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 4 },
-  timelineCardUpcoming: { backgroundColor: 'rgba(255,255,255,0.4)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' },
-  timelineIconContainer: { width: 48, height: 48, borderRadius: 16, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center', marginRight: 16 },
-  timelineIcon: { fontSize: 22 },
-  timelineContent: { flex: 1, justifyContent: 'center' },
-  timelineCardTitle: { fontSize: 16, fontWeight: '700', color: '#1e293b', fontFamily: 'Outfit', marginBottom: 4 },
-  timelineCardDate: { fontSize: 13, color: '#64748b', fontFamily: 'Inter', fontWeight: '500' },
-  quickAccessGrid: { flexDirection: 'row', justifyContent: 'space-between' },
-  qaCardWrapper: { width: (width - 48 - 24) / 3, borderRadius: 24, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 3 },
-  qaCardGradient: { padding: 16, alignItems: 'center', justifyContent: 'center', height: 100 },
-  qaIcon: { fontSize: 32, marginBottom: 8 },
-  qaTitle: { fontSize: 13, fontWeight: '700', color: '#1e293b', fontFamily: 'Inter' }
+  container: { flex: 1, backgroundColor: COLORS.background },
+  scroll: { padding: SPACING.lg, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 110 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.xl },
+  welcomeText: { fontSize: 14, color: COLORS.textMuted, fontWeight: '500' },
+  userName: { fontSize: 22, fontWeight: '800', color: COLORS.text },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  iconBtn: { width: 40, height: 40, backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.md, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
+  avatarBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
+  avatarInitial: { color: COLORS.white, fontWeight: '800', fontSize: 16 },
+
+  balanceCard: { backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.xl, borderWidth: 1, borderColor: COLORS.border },
+  balanceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
+  balanceLabel: { fontSize: 13, color: COLORS.textMuted, fontWeight: '500', marginBottom: 4 },
+  balanceAmount: { fontSize: 32, fontWeight: '900', color: COLORS.text, letterSpacing: -1 },
+  addMoneyBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.primary, paddingHorizontal: 14, paddingVertical: 10, borderRadius: BORDER_RADIUS.md, gap: 6 },
+  addMoneyText: { color: COLORS.white, fontSize: 13, fontWeight: '700' },
+  cardTabs: { flexDirection: 'row', backgroundColor: COLORS.cardAlt, borderRadius: BORDER_RADIUS.md, padding: 4 },
+  cardTab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: BORDER_RADIUS.sm },
+  cardTabActive: { backgroundColor: COLORS.primary },
+  cardTabText: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted },
+  cardTabTextActive: { color: COLORS.white },
+
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text },
+  newCardBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  newCardText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
+  seeAllText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
+
+  cardsScroll: { marginHorizontal: -SPACING.lg, paddingHorizontal: SPACING.lg, marginBottom: SPACING.xl },
+  healthCard: { width: width * 0.72, height: 170, borderRadius: BORDER_RADIUS.xl, padding: SPACING.lg, justifyContent: 'space-between', overflow: 'hidden', ...SHADOWS.medium },
+  cardTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  cardBalanceLabel: { fontSize: 24, fontWeight: '800', color: COLORS.white },
+  cardChip: { width: 32, height: 24, backgroundColor: 'rgba(255,255,255,0.4)', borderRadius: 6 },
+  cardNumber: { fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: '600', letterSpacing: 2 },
+  cardBottomRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  cardDetails: { fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: '600' },
+  cardCircle: { position: 'absolute', backgroundColor: COLORS.white, borderRadius: 999 },
+
+  transferAvatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.card, justifyContent: 'center', alignItems: 'center', marginRight: 14, borderWidth: 1, borderColor: COLORS.border },
+  transferAvatarAdd: { backgroundColor: COLORS.primaryLight },
+
+  txRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: 10, borderWidth: 1, borderColor: COLORS.border, gap: 14 },
+  txIcon: { width: 44, height: 44, backgroundColor: COLORS.cardAlt, borderRadius: BORDER_RADIUS.md, justifyContent: 'center', alignItems: 'center' },
+  txTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text },
+  txSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  txAmount: { fontSize: 15, fontWeight: '700', color: COLORS.danger },
+
+  doctorCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: 10, borderWidth: 1, borderColor: COLORS.border, gap: 14 },
+  doctorAvatar: { width: 48, height: 48, borderRadius: BORDER_RADIUS.md, backgroundColor: COLORS.cardAlt, justifyContent: 'center', alignItems: 'center' },
+  doctorName: { fontSize: 15, fontWeight: '700', color: COLORS.text },
+  doctorSpec: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  bookBtn: { backgroundColor: COLORS.primary, paddingHorizontal: 14, paddingVertical: 8, borderRadius: BORDER_RADIUS.md },
+  bookBtnText: { color: COLORS.white, fontSize: 13, fontWeight: '700' },
 });

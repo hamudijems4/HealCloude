@@ -1,48 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Animated, Easing } from 'react-native';
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  KeyboardAvoidingView, 
+  Platform, 
+  ScrollView, 
+  Dimensions, 
+  ActivityIndicator 
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { MotiView, MotiText } from 'moti';
+import { Shield, Lock, Smartphone, ChevronRight, Info } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../theme';
+
+const { height } = Dimensions.get('window');
 
 export default function LoginScreen() {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [faydaId, setFaydaId] = useState('');
+  const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  // Animations
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
-  const floatAnim1 = useRef(new Animated.Value(0)).current;
-  const floatAnim2 = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    // Entrance animations
-    Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: true, easing: Easing.out(Easing.cubic) })
-    ]).start();
-
-    // Floating background shapes
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnim1, { toValue: 1, duration: 4000, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
-        Animated.timing(floatAnim1, { toValue: 0, duration: 4000, useNativeDriver: true, easing: Easing.inOut(Easing.sin) })
-      ])
-    ).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnim2, { toValue: 1, duration: 5000, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
-        Animated.timing(floatAnim2, { toValue: 0, duration: 5000, useNativeDriver: true, easing: Easing.inOut(Easing.sin) })
-      ])
-    ).start();
-  }, []);
-
   const handleLogin = async () => {
+    if (!faydaId || !pin) {
+      // Small validation
+      return;
+    }
     setLoading(true);
     try {
-      await login(identifier || 'ET8823710293', password || 'password123');
+      await login(faydaId, pin);
     } catch (error: any) {
       console.log('Login error:', error);
     } finally {
@@ -50,71 +40,143 @@ export default function LoginScreen() {
     }
   };
 
-  const translateY1 = floatAnim1.interpolate({ inputRange: [0, 1], outputRange: [0, -30] });
-  const translateY2 = floatAnim2.interpolate({ inputRange: [0, 1], outputRange: [0, 40] });
-
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#eef2ff', '#e0e7ff', '#c7d2fe']} style={StyleSheet.absoluteFill} />
-      
-      {/* Animated Background Orbs */}
-      <Animated.View style={[styles.orb1, { transform: [{ translateY: translateY1 }] }]} />
-      <Animated.View style={[styles.orb2, { transform: [{ translateY: translateY2 }] }]} />
+      <LinearGradient 
+        colors={[COLORS.primaryLight, COLORS.background]} 
+        style={StyleSheet.absoluteFill}
+      />
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          
-          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }], alignItems: 'center', marginBottom: 40 }}>
-            <View style={styles.logoWrapper}>
-              <LinearGradient colors={['#5c59f0', '#8b5cf6']} style={styles.logoGradient}>
-                <Text style={styles.logoIcon}>🤰</Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={{ flex: 1 }}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer} 
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Logo & Header Section */}
+          <MotiView 
+            from={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', duration: 1000 }}
+            style={styles.header}
+          >
+            <View style={styles.logoContainer}>
+              <LinearGradient
+                colors={[COLORS.primary, COLORS.secondary]}
+                style={styles.logoGradient}
+              >
+                <Shield size={40} color={COLORS.white} />
               </LinearGradient>
+              <MotiView
+                from={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 500, type: 'spring' }}
+                style={styles.logoBadge}
+              >
+                <Lock size={12} color={COLORS.white} />
+              </MotiView>
             </View>
-            <Text style={styles.title}>TenaLink</Text>
-            <Text style={styles.subtitle}>The Future of Care</Text>
-          </Animated.View>
+            <MotiText 
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ delay: 300 }}
+              style={styles.title}
+            >
+              TenaLink
+            </MotiText>
+            <MotiText 
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ delay: 400 }}
+              style={styles.subtitle}
+            >
+              National Health Portal • Fayda ID
+            </MotiText>
+          </MotiView>
 
-          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-            <BlurView intensity={70} tint="light" style={styles.glassCard}>
-              <Text style={styles.cardTitle}>Welcome Back</Text>
-              
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Fayda ID / Email</Text>
+          {/* Login Card */}
+          <MotiView 
+            from={{ opacity: 0, translateY: 20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'timing', duration: 800, delay: 500 }}
+            style={styles.card}
+          >
+            <Text style={styles.cardTitle}>Sign In to Your Profile</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Ethiopian National ID (Fayda)</Text>
+              <View style={styles.inputWrapper}>
+                <Smartphone size={20} color={COLORS.textMuted} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
-                  value={identifier}
-                  onChangeText={setIdentifier}
-                  placeholder="e.g. ET8823710293"
-                  placeholderTextColor="#8492a6"
-                  autoCapitalize="none"
+                  value={faydaId}
+                  onChangeText={setFaydaId}
+                  placeholder="ET-8823710-29"
+                  placeholderTextColor={COLORS.textMuted}
+                  autoCapitalize="characters"
                 />
               </View>
+            </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Password</Text>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Secure PIN / Password</Text>
+              <View style={styles.inputWrapper}>
+                <Lock size={20} color={COLORS.textMuted} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
-                  value={password}
-                  onChangeText={setPassword}
+                  value={pin}
+                  onChangeText={setPin}
                   placeholder="••••••••"
-                  placeholderTextColor="#8492a6"
+                  placeholderTextColor={COLORS.textMuted}
                   secureTextEntry
                 />
               </View>
+            </View>
 
-              <TouchableOpacity style={[styles.loginButton, loading && styles.loginButtonDisabled]} onPress={handleLogin} disabled={loading}>
-                <LinearGradient colors={['#5c59f0', '#4f46e5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.buttonGradient}>
-                  <Text style={styles.loginButtonText}>{loading ? 'Authenticating...' : 'Sign In'}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-              
-              <View style={styles.demoBanner}>
-                <Text style={styles.demoBannerIcon}>✨</Text>
-                <Text style={styles.demoBannerText}>Demo mode: Tap Sign In directly to continue.</Text>
-              </View>
-            </BlurView>
-          </Animated.View>
+            <TouchableOpacity 
+              activeOpacity={0.8}
+              style={[styles.loginBtn, (!faydaId || !pin || loading) && styles.loginBtnDisabled]} 
+              onPress={handleLogin} 
+              disabled={loading || !faydaId || !pin}
+            >
+              <LinearGradient 
+                colors={loading ? [COLORS.textMuted, COLORS.textMuted] : [COLORS.primary, COLORS.secondary]} 
+                start={{ x: 0, y: 0 }} 
+                end={{ x: 1, y: 0 }} 
+                style={styles.btnGradient}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <>
+                    <Text style={styles.loginBtnText}>Secure Sign In</Text>
+                    <ChevronRight size={20} color={COLORS.white} />
+                  </>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <View style={styles.infoBox}>
+              <Info size={16} color={COLORS.primary} />
+              <Text style={styles.infoText}>
+                Your medical data is encrypted under Ethiopian Federal Health privacy protocols.
+              </Text>
+            </View>
+          </MotiView>
 
+          <MotiView
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1000 }}
+            style={styles.footer}
+          >
+            <Text style={styles.footerText}>Need help with Fayda ID?</Text>
+            <TouchableOpacity>
+              <Text style={styles.footerLink}>Contact Support</Text>
+            </TouchableOpacity>
+          </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -122,25 +184,153 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f6f8' },
-  orb1: { position: 'absolute', top: -50, right: -50, width: 300, height: 300, borderRadius: 150, backgroundColor: '#a78bfa', opacity: 0.3, filter: 'blur(40px)' },
-  orb2: { position: 'absolute', bottom: 100, left: -100, width: 350, height: 350, borderRadius: 175, backgroundColor: '#818cf8', opacity: 0.2, filter: 'blur(50px)' },
-  scrollContainer: { flexGrow: 1, padding: 24, paddingTop: 100, paddingBottom: 40, justifyContent: 'center' },
-  logoWrapper: { width: 80, height: 80, borderRadius: 28, overflow: 'hidden', shadowColor: '#5c59f0', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.3, shadowRadius: 20, elevation: 10, marginBottom: 20 },
-  logoGradient: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  logoIcon: { fontSize: 40 },
-  title: { fontSize: 42, fontWeight: '800', color: '#1e293b', fontFamily: 'Outfit', letterSpacing: -1 },
-  subtitle: { fontSize: 16, color: '#64748b', fontFamily: 'Inter', marginTop: 4, letterSpacing: 0.5 },
-  glassCard: { borderRadius: 32, padding: 32, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)', backgroundColor: 'rgba(255,255,255,0.4)' },
-  cardTitle: { fontSize: 28, fontWeight: '700', color: '#1e293b', fontFamily: 'Outfit', marginBottom: 24, letterSpacing: -0.5 },
-  inputGroup: { marginBottom: 20 },
-  label: { fontSize: 13, fontWeight: '600', color: '#475569', fontFamily: 'Inter', marginBottom: 8, marginLeft: 4 },
-  input: { backgroundColor: 'rgba(255,255,255,0.7)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)', borderRadius: 16, paddingHorizontal: 20, paddingVertical: 16, fontSize: 16, color: '#1e293b', fontFamily: 'Inter', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 4 },
-  loginButton: { marginTop: 12, borderRadius: 20, overflow: 'hidden', shadowColor: '#5c59f0', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8 },
-  buttonGradient: { paddingVertical: 18, alignItems: 'center', justifyContent: 'center' },
-  loginButtonDisabled: { opacity: 0.7 },
-  loginButtonText: { color: '#ffffff', fontSize: 17, fontWeight: '700', fontFamily: 'Inter', letterSpacing: 0.5 },
-  demoBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.5)', padding: 16, borderRadius: 16, marginTop: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
-  demoBannerIcon: { fontSize: 18, marginRight: 12 },
-  demoBannerText: { flex: 1, fontSize: 13, color: '#475569', fontFamily: 'Inter', lineHeight: 18 }
+  container: { 
+    flex: 1, 
+    backgroundColor: COLORS.background 
+  },
+  scrollContainer: { 
+    flexGrow: 1, 
+    padding: SPACING.lg, 
+    justifyContent: 'center',
+    paddingBottom: 40 
+  },
+  header: { 
+    alignItems: 'center', 
+    marginBottom: SPACING.xxl 
+  },
+  logoContainer: {
+    width: 80,
+    height: 80,
+    marginBottom: SPACING.md,
+    position: 'relative',
+  },
+  logoGradient: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BORDER_RADIUS.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.medium,
+  },
+  logoBadge: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    backgroundColor: COLORS.accent,
+    padding: 4,
+    borderRadius: BORDER_RADIUS.full,
+    borderWidth: 3,
+    borderColor: COLORS.background,
+  },
+  title: { 
+    fontSize: 32, 
+    fontWeight: '800', 
+    color: COLORS.text,
+    letterSpacing: -0.5
+  },
+  subtitle: { 
+    fontSize: 14, 
+    color: COLORS.textMuted, 
+    marginTop: SPACING.xs, 
+    fontWeight: '500' 
+  },
+  card: {
+    backgroundColor: COLORS.card,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...SHADOWS.medium,
+  },
+  cardTitle: { 
+    fontSize: 18, 
+    fontWeight: '700', 
+    color: COLORS.text,
+    marginBottom: SPACING.xl,
+    textAlign: 'center'
+  },
+  inputGroup: { 
+    marginBottom: SPACING.lg 
+  },
+  label: { 
+    fontSize: 13, 
+    fontWeight: '600', 
+    color: COLORS.text, 
+    marginBottom: SPACING.sm,
+    marginLeft: 4
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.cardAlt,
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    height: 56,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  inputIcon: {
+    marginRight: SPACING.sm,
+  },
+  input: { 
+    flex: 1,
+    fontSize: 16, 
+    color: COLORS.text,
+    fontWeight: '500'
+  },
+  loginBtn: { 
+    marginTop: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    overflow: 'hidden',
+    ...SHADOWS.light,
+  },
+  loginBtnDisabled: {
+    opacity: 0.7,
+  },
+  btnGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 56,
+    gap: SPACING.sm,
+  },
+  loginBtnText: { 
+    color: COLORS.white, 
+    fontSize: 16, 
+    fontWeight: '700' 
+  },
+  infoBox: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primaryLight,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginTop: SPACING.xl,
+    gap: SPACING.sm,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(108, 99, 255, 0.2)',
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 12,
+    color: COLORS.primary,
+    fontWeight: '500',
+    lineHeight: 18
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: SPACING.xl,
+    gap: SPACING.xs
+  },
+  footerText: {
+    fontSize: 14,
+    color: COLORS.textMuted,
+  },
+  footerLink: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontWeight: '700',
+  }
 });
