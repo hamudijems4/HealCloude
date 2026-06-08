@@ -229,7 +229,7 @@ export default function ChatScreen() {
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             renderItem={renderMessage}
-            onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
+
             ListFooterComponent={
               loading ? (
                 <View style={[styles.row, styles.rowAi]}>
@@ -263,7 +263,7 @@ export default function ChatScreen() {
                 placeholder="Describe your symptoms..."
                 placeholderTextColor={COLORS.textMuted}
                 multiline
-                onSubmitEditing={() => send()}
+    
               />
               <TouchableOpacity
                 onPress={() => send()}
