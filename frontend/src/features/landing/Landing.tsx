@@ -101,13 +101,13 @@ const TiltCard: React.FC<{ children: React.ReactNode; className?: string }> = ({
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
-  const [scrollY, setScrollY] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const mouseMoveTimer = useRef<number>(0);
   const particlePositions = useState(() =>
-    Array.from({ length: 30 }, () => ({
+    Array.from({ length: 12 }, () => ({
       left: `${Math.random() * 100}%`,
       delay: `${Math.random() * 8}s`,
-      duration: `${5 + Math.random() * 6}s`,
+      duration: `${6 + Math.random() * 6}s`,
       size: `${3 + Math.random() * 4}px`,
     }))
   )[0];
@@ -115,18 +115,16 @@ export const Landing: React.FC = () => {
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
 
-    const onMove = (e: MouseEvent) => setMousePos({
-      x: e.clientX / window.innerWidth,
-      y: e.clientY / window.innerHeight,
-    });
-    const onScroll = () => setScrollY(window.scrollY);
-
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('scroll', onScroll);
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('scroll', onScroll);
+    const onMove = (e: MouseEvent) => {
+      if (mouseMoveTimer.current) return;
+      mouseMoveTimer.current = window.setTimeout(() => {
+        mouseMoveTimer.current = 0;
+        setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
+      }, 50);
     };
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
   const features = [
@@ -197,7 +195,7 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* ── NAV ── */}
-      <nav className="lp-nav" style={{ transform: `translateY(${Math.min(scrollY * 0.05, 4)}px)` }}>
+      <nav className="lp-nav">
         <div className="lp-nav__inner">
           <div className="lp-nav__brand">
             <EthiopianLogo />

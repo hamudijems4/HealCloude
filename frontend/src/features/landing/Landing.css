@@ -2,7 +2,7 @@
    CLOUDHEAL LANDING — BLUE & WHITE · CINEMATIC ANIMATIONS
    ═══════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=DM+Sans:wght@400;600;700&display=swap&display=swap');
 
 /* ── Tokens ── */
 :root {
@@ -49,25 +49,26 @@
   filter: blur(110px);
   transition: transform 0.8s ease-out;
   will-change: transform;
+  contain: strict;
 }
 
 .lp-orb--1 {
-  width: 900px; height: 900px;
-  background: radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%);
-  top: -350px; right: -250px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+  top: -300px; right: -200px;
   animation: orb-drift-a 30s ease-in-out infinite;
 }
 
 .lp-orb--2 {
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(29,78,216,0.18) 0%, transparent 70%);
-  bottom: -250px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(29,78,216,0.15) 0%, transparent 70%);
+  bottom: -200px; left: -150px;
   animation: orb-drift-b 24s ease-in-out infinite;
 }
 
 .lp-orb--3 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(96,165,250,0.15) 0%, transparent 70%);
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(96,165,250,0.12) 0%, transparent 70%);
   top: 40%; left: 35%;
   animation: orb-drift-c 18s ease-in-out infinite;
 }
@@ -99,24 +100,9 @@
 }
 
 /* Scanline shimmer */
-.lp-scanline {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(59,130,246,0.03) 50%,
-    transparent 100%
-  );
-  background-size: 100% 8px;
-  animation: scanline 8s linear infinite;
-}
-@keyframes scanline {
-  from { background-position: 0 0; }
-  to   { background-position: 0 100vh; }
-}
+/* scanline removed — not worth the repaint cost */
 
-/* Floating particles */
+/* Floating particles — GPU only, reduced count handled in TSX */
 .lp-particle {
   position: absolute;
   background: var(--blue-500);
@@ -124,11 +110,12 @@
   opacity: 0;
   animation: particle-float linear infinite;
   bottom: -20px;
+  will-change: transform, opacity;
 }
 @keyframes particle-float {
   0%   { transform: translateY(0) scale(0); opacity: 0; }
-  10%  { opacity: 0.35; transform: scale(1); }
-  90%  { opacity: 0.25; }
+  10%  { opacity: 0.3; transform: scale(1); }
+  90%  { opacity: 0.2; }
   100% { transform: translateY(-105vh) scale(0.3); opacity: 0; }
 }
 
