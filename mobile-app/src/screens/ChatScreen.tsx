@@ -1,271 +1,163 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  FlatList, 
-  KeyboardAvoidingView, 
-  Platform, 
-  ActivityIndicator, 
-  Dimensions 
-} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView, AnimatePresence } from 'moti';
-import { 
-  Send, 
-  Bot, 
-  User, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Info, 
-  ArrowUp,
-  Hospital,
-  ChevronRight,
-  Droplets,
-  Zap
-} from 'lucide-react-native';
+import { Bot, User, AlertTriangle, CheckCircle2, Info, ArrowUp, Hospital, ChevronRight, Droplets, Bell } from 'lucide-react-native';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../theme';
-
-const { width } = Dimensions.get('window');
 
 interface Message {
   id: string;
   sender: 'user' | 'ai';
   text: string;
   triage?: 'green' | 'yellow' | 'red';
-  showEmergencyBooking?: boolean;
+  showBooking?: boolean;
   bookingConfirmed?: boolean;
 }
 
+const QUICK_PROMPTS = ['I feel dizzy', 'Sharp abdominal pain', 'Baby not moving', 'I have a fever'];
+
 export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', sender: 'ai', text: "Hello! I'm TenaBot, your National AI Health Guardian. How are you feeling today?" }
+    { id: '1', sender: 'ai', text: "Hello! I'm TenaBot 🤖, your AI Health Guardian.\n\nDescribe your symptoms and I'll assess your risk level instantly. In emergencies, I can auto-book the nearest hospital slot for you." }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const listRef = useRef<FlatList>(null);
 
-  const flatListRef = useRef<FlatList>(null);
-
-  const handleSend = () => {
-    if (!input.trim() || loading) return;
-
-    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: input };
-    setMessages(prev => [...prev, userMessage]);
+  const send = (text: string = input) => {
+    if (!text.trim() || loading) return;
+    const userMsg: Message = { id: Date.now().toString(), sender: 'user', text };
+    setMessages(p => [...p, userMsg]);
     setInput('');
     setLoading(true);
 
     setTimeout(() => {
-      const query = userMessage.text.toLowerCase();
-      let replyText = '';
-      let triage: 'green' | 'yellow' | 'red' = 'green';
-      let showEmergencyBooking = false;
+      const q = text.toLowerCase();
+      let reply = '', triage: 'green' | 'yellow' | 'red' = 'green', showBooking = false;
 
-      if (query.includes('bleeding') || query.includes('sharp pain') || query.includes('fever')) {
+      if (q.includes('sharp') || q.includes('bleeding') || q.includes('fever') || q.includes('not moving')) {
         triage = 'red';
-        replyText = "⚠️ CRITICAL ALERT: Based on national obstetric guidelines, your symptoms indicate a high-risk emergency. Please seek immediate attention.";
-        showEmergencyBooking = true;
-      } else if (query.includes('dizzy') || query.includes('swelling') || query.includes('nausea')) {
+        reply = '⚠️ CRITICAL: Your symptoms match high-risk obstetric emergency indicators. Immediate medical attention is required.';
+        showBooking = true;
+      } else if (q.includes('dizzy') || q.includes('swelling') || q.includes('nausea') || q.includes('pain')) {
         triage = 'yellow';
-        replyText = "⚠️ MONITOR: Your symptoms are moderate-risk. We advise monitoring closely, resting, and keeping up hydration.";
+        reply = '⚠️ MONITOR: Moderate-risk symptoms detected. Rest, stay hydrated, and monitor closely. Contact your doctor if symptoms worsen within 2 hours.';
       } else {
         triage = 'green';
-        replyText = "✅ NORMAL: This aligns with typical maternal physiology. Maintain your scheduled appointments and continue taking your daily prenatal vitamins.";
+        reply = '✅ NORMAL: Your symptoms align with typical maternal physiology at this stage. Continue your prenatal vitamins and scheduled appointments.';
       }
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: 'ai',
-        text: replyText,
-        triage,
-        showEmergencyBooking
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages(p => [...p, { id: (Date.now() + 1).toString(), sender: 'ai', text: reply, triage, showBooking }]);
       setLoading(false);
-      
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 150);
-
+      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
     }, 1500);
   };
 
-  const handleConfirmAutoBooking = (messageId: string) => {
-    setActiveBookingId(messageId);
+  const confirmBooking = (id: string) => {
+    setBookingId(id);
     setTimeout(() => {
-      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, bookingConfirmed: true, showEmergencyBooking: false } : m));
-      setActiveBookingId(null);
+      setMessages(p => p.map(m => m.id === id ? { ...m, bookingConfirmed: true, showBooking: false } : m));
+      setBookingId(null);
     }, 1500);
   };
 
   return (
     <View style={styles.container}>
-      <LinearGradient 
-        colors={[COLORS.primaryLight, COLORS.background]} 
-        style={StyleSheet.absoluteFill}
-      />
-
-      {/* Wellness Reminders */}
-      <MotiView 
-        from={{ translateY: -50, opacity: 0 }}
-        animate={{ translateY: 0, opacity: 1 }}
-        style={styles.reminderBanner}
-      >
-        <View style={styles.reminderContent}>
-          <Droplets size={16} color={COLORS.primary} />
-          <Text style={styles.reminderText}>
-            Hydration Goal: 45% complete • Vitamin due at 8:00 PM
-          </Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View style={styles.botAvatar}>
+            <Bot size={20} color={COLORS.primary} />
+          </View>
+          <View>
+            <Text style={styles.headerTitle}>TenaBot AI</Text>
+            <Text style={styles.headerSub}>AI Health Guardian • Online</Text>
+          </View>
         </View>
+        <View style={styles.onlineDot} />
+      </View>
+
+      {/* Wellness Reminder */}
+      <MotiView from={{ translateY: -20, opacity: 0 }} animate={{ translateY: 0, opacity: 1 }} style={styles.reminderRow}>
+        <Droplets size={14} color={COLORS.primary} />
+        <Text style={styles.reminderText}>Hydration: 45% • Vitamin D due at 8:00 PM</Text>
+        <Bell size={14} color={COLORS.textMuted} />
       </MotiView>
 
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
         <FlatList
-          ref={flatListRef}
+          ref={listRef}
           data={messages}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.chatList}
+          keyExtractor={i => i.id}
+          contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
-          renderItem={({ item, index }) => {
+          renderItem={({ item }) => {
             const isAi = item.sender === 'ai';
             return (
-              <MotiView 
-                from={{ opacity: 0, translateY: 20, scale: 0.95 }}
-                animate={{ opacity: 1, translateY: 0, scale: 1 }}
-                transition={{ type: 'spring', delay: 100 }}
-                style={[styles.messageRow, isAi ? styles.rowAi : styles.rowUser]}
-              >
-                {isAi && (
-                  <View style={[styles.avatarCircle, { backgroundColor: COLORS.white }]}>
-                    <Bot size={20} color={COLORS.primary} />
-                  </View>
-                )}
-                
-                <View style={styles.messageContent}>
-                  <View style={[
-                    styles.bubble, 
-                    isAi ? styles.bubbleAi : styles.bubbleUser
-                  ]}>
-                    <Text style={[styles.messageText, isAi ? styles.textAi : styles.textUser]}>
-                      {item.text}
-                    </Text>
-
-                    {item.triage && (
-                      <View style={[
-                        styles.triageBadge, 
-                        { backgroundColor: item.triage === 'red' ? COLORS.dangerLight : 
-                                         item.triage === 'yellow' ? COLORS.warningLight : 
-                                         COLORS.successLight }
-                      ]}>
-                        {item.triage === 'red' ? <AlertTriangle size={12} color={COLORS.danger} /> :
-                         item.triage === 'yellow' ? <Info size={12} color={COLORS.warning} /> :
-                         <CheckCircle2 size={12} color={COLORS.accent} />}
-                        <Text style={[
-                          styles.triageText,
-                          { color: item.triage === 'red' ? COLORS.danger : 
-                                   item.triage === 'yellow' ? COLORS.warning : 
-                                   COLORS.accent }
-                        ]}>
-                          {item.triage.toUpperCase()} STATUS
-                        </Text>
+              <MotiView from={{ opacity: 0, translateY: 16, scale: 0.96 }} animate={{ opacity: 1, translateY: 0, scale: 1 }} transition={{ type: 'spring', delay: 50 }} style={[styles.row, isAi ? styles.rowAi : styles.rowUser]}>
+                {isAi && <View style={styles.aiBubbleIcon}><Bot size={18} color={COLORS.primary} /></View>}
+                <View style={[styles.bubble, isAi ? styles.bubbleAi : styles.bubbleUser]}>
+                  <Text style={[styles.bubbleText, isAi ? styles.textAi : styles.textUser]}>{item.text}</Text>
+                  {item.triage && (
+                    <View style={[styles.triagePill, { backgroundColor: item.triage === 'red' ? COLORS.dangerLight : item.triage === 'yellow' ? COLORS.warningLight : COLORS.successLight }]}>
+                      {item.triage === 'red' ? <AlertTriangle size={11} color={COLORS.danger} /> : item.triage === 'yellow' ? <Info size={11} color={COLORS.warning} /> : <CheckCircle2 size={11} color={COLORS.accent} />}
+                      <Text style={[styles.triageText, { color: item.triage === 'red' ? COLORS.danger : item.triage === 'yellow' ? COLORS.warning : COLORS.accent }]}>
+                        {item.triage.toUpperCase()} RISK
+                      </Text>
+                    </View>
+                  )}
+                  {item.showBooking && (
+                    <MotiView from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={styles.bookingBox}>
+                      <View style={styles.bookingHeaderRow}>
+                        <Hospital size={18} color={COLORS.danger} />
+                        <Text style={styles.bookingTitle}>Emergency Auto-Booking</Text>
                       </View>
-                    )}
-                  </View>
-
-                  <AnimatePresence>
-                    {item.showEmergencyBooking && (
-                      <MotiView 
-                        from={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        style={styles.bookingBox}
-                      >
-                        <View style={styles.bookingHeader}>
-                          <Hospital size={20} color={COLORS.danger} />
-                          <Text style={styles.bookingTitle}>Emergency Auto-Booking</Text>
-                        </View>
-                        <Text style={styles.bookingDesc}>
-                          A critical slot is held at Tikur Anbessa Hospital (1.8 km). Authorize booking?
-                        </Text>
-                        <TouchableOpacity 
-                          style={styles.confirmBtn}
-                          onPress={() => handleConfirmAutoBooking(item.id)}
-                          disabled={activeBookingId === item.id}
-                        >
-                          <LinearGradient
-                            colors={[COLORS.danger, '#C53030']}
-                            style={styles.confirmBtnGradient}
-                          >
-                            {activeBookingId === item.id ? (
-                              <ActivityIndicator size="small" color={COLORS.white} />
-                            ) : (
-                              <>
-                                <Text style={styles.confirmBtnText}>Authorize Now</Text>
-                                <ChevronRight size={18} color={COLORS.white} />
-                              </>
-                            )}
-                          </LinearGradient>
-                        </TouchableOpacity>
-                      </MotiView>
-                    )}
-
-                    {item.bookingConfirmed && (
-                      <MotiView 
-                        from={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        style={styles.bookingSuccessBox}
-                      >
-                        <CheckCircle2 size={20} color={COLORS.accent} />
-                        <Text style={styles.bookingSuccessText}>
-                          EMERGENCY SLOT CONFIRMED: Code ET-EMERG-442
-                        </Text>
-                      </MotiView>
-                    )}
-                  </AnimatePresence>
+                      <Text style={styles.bookingDesc}>Tikur Anbessa Hospital — 1.8 km away. 1 emergency slot available. Authorize booking?</Text>
+                      <TouchableOpacity onPress={() => confirmBooking(item.id)} disabled={bookingId === item.id} style={styles.authBtn}>
+                        <LinearGradient colors={[COLORS.danger, '#C53030']} style={styles.authBtnGradient}>
+                          {bookingId === item.id ? <ActivityIndicator size="small" color={COLORS.white} /> : <><Text style={styles.authBtnText}>Authorize Now</Text><ChevronRight size={16} color={COLORS.white} /></>}
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </MotiView>
+                  )}
+                  {item.bookingConfirmed && (
+                    <View style={styles.confirmedBox}>
+                      <CheckCircle2 size={16} color={COLORS.accent} />
+                      <Text style={styles.confirmedText}>SLOT CONFIRMED • Code: ET-EMERG-442</Text>
+                    </View>
+                  )}
                 </View>
-
-                {!isAi && (
-                  <View style={[styles.avatarCircle, { backgroundColor: COLORS.primary }]}>
-                    <User size={20} color={COLORS.white} />
-                  </View>
-                )}
+                {!isAi && <View style={styles.userBubbleIcon}><User size={18} color={COLORS.white} /></View>}
               </MotiView>
             );
           }}
+          ListFooterComponent={loading ? (
+            <View style={[styles.row, styles.rowAi]}>
+              <View style={styles.aiBubbleIcon}><Bot size={18} color={COLORS.primary} /></View>
+              <View style={[styles.bubble, styles.bubbleAi]}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              </View>
+            </View>
+          ) : null}
         />
 
-        {/* Input Bar */}
+        {/* Quick Prompts */}
+        <View style={styles.quickRow}>
+          {QUICK_PROMPTS.map(p => (
+            <TouchableOpacity key={p} onPress={() => send(p)} style={styles.quickChip}>
+              <Text style={styles.quickChipText}>{p}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Input */}
         <View style={styles.inputArea}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              value={input}
-              onChangeText={setInput}
-              placeholder="Report symptoms..."
-              placeholderTextColor={COLORS.textMuted}
-              multiline
-            />
-            <TouchableOpacity 
-              style={[styles.sendBtn, !input.trim() && styles.sendBtnDisabled]}
-              onPress={handleSend}
-              disabled={!input.trim() || loading}
-            >
-              <LinearGradient
-                colors={!input.trim() ? [COLORS.textMuted, COLORS.textMuted] : [COLORS.primary, COLORS.secondary]}
-                style={styles.sendBtnGradient}
-              >
-                {loading ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
-                ) : (
-                  <ArrowUp size={22} color={COLORS.white} />
-                )}
+          <View style={styles.inputRow}>
+            <TextInput style={styles.input} value={input} onChangeText={setInput} placeholder="Describe your symptoms..." placeholderTextColor={COLORS.textMuted} multiline />
+            <TouchableOpacity onPress={() => send()} disabled={!input.trim() || loading} style={[styles.sendBtn, !input.trim() && styles.sendBtnDisabled]}>
+              <LinearGradient colors={!input.trim() ? [COLORS.cardAlt, COLORS.cardAlt] : [COLORS.primary, COLORS.secondary]} style={styles.sendGradient}>
+                {loading ? <ActivityIndicator size="small" color={COLORS.white} /> : <ArrowUp size={20} color={COLORS.white} />}
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -276,195 +168,45 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: COLORS.background 
-  },
-  reminderBanner: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.sm,
-  },
-  reminderContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.card,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    gap: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.light,
-  },
-  reminderText: {
-    fontSize: 12,
-    color: COLORS.text,
-    fontWeight: '600',
-    flex: 1,
-  },
-  chatList: { 
-    padding: SPACING.lg,
-    paddingBottom: 100,
-  },
-  messageRow: { 
-    flexDirection: 'row', 
-    marginBottom: SPACING.lg,
-    alignItems: 'flex-end',
-    gap: SPACING.sm,
-  },
-  rowAi: { 
-    justifyContent: 'flex-start',
-    paddingRight: 40,
-  },
-  rowUser: { 
-    justifyContent: 'flex-end',
-    paddingLeft: 40,
-  },
-  avatarCircle: { 
-    width: 36, 
-    height: 36, 
-    borderRadius: 18, 
-    justifyContent: 'center', 
-    alignItems: 'center',
-    ...SHADOWS.light,
-  },
-  messageContent: {
-    flex: 1,
-    gap: SPACING.sm,
-  },
-  bubble: { 
-    borderRadius: 20, 
-    padding: SPACING.md,
-    ...SHADOWS.light,
-  },
-  bubbleAi: { 
-    backgroundColor: COLORS.card,
-    borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  bubbleUser: { 
-    backgroundColor: COLORS.primary,
-    borderBottomRightRadius: 4,
-  },
-  messageText: { 
-    fontSize: 15, 
-    lineHeight: 22,
-    fontWeight: '500',
-  },
-  textAi: { 
-    color: COLORS.text 
-  },
-  textUser: { 
-    color: COLORS.white 
-  },
-  triageBadge: { 
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: BORDER_RADIUS.full,
-    marginTop: SPACING.sm,
-    gap: 4,
-  },
-  triageText: { 
-    fontSize: 10, 
-    fontWeight: '800' 
-  },
-  bookingBox: { 
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.dangerLight,
-    marginTop: SPACING.xs,
-    ...SHADOWS.medium,
-  },
-  bookingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    marginBottom: SPACING.xs,
-  },
-  bookingTitle: { 
-    fontSize: 14, 
-    fontWeight: '700', 
-    color: COLORS.danger 
-  },
-  bookingDesc: { 
-    fontSize: 13, 
-    color: COLORS.text, 
-    lineHeight: 18,
-    marginBottom: SPACING.md,
-  },
-  confirmBtn: {
-    borderRadius: BORDER_RADIUS.md,
-    overflow: 'hidden',
-  },
-  confirmBtnGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SPACING.sm,
-    gap: 4,
-  },
-  confirmBtnText: { 
-    color: COLORS.white, 
-    fontSize: 14, 
-    fontWeight: '700' 
-  },
-  bookingSuccessBox: { 
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.successLight,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    gap: SPACING.sm,
-  },
-  bookingSuccessText: { 
-    fontSize: 12, 
-    color: COLORS.accent, 
-    fontWeight: '700',
-    flex: 1,
-  },
-  inputArea: { 
-    padding: SPACING.lg,
-    backgroundColor: 'transparent',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    backgroundColor: COLORS.card,
-    borderRadius: 28,
-    padding: 6,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.medium,
-  },
-  input: { 
-    flex: 1, 
-    paddingHorizontal: SPACING.md, 
-    paddingVertical: 10,
-    maxHeight: 100,
-    fontSize: 15,
-    color: COLORS.text,
-  },
-  sendBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    overflow: 'hidden',
-  },
-  sendBtnDisabled: {
-    opacity: 0.5,
-  },
-  sendBtnGradient: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
+  container: { flex: 1, backgroundColor: COLORS.background },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingHorizontal: SPACING.lg, paddingBottom: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  botAvatar: { width: 40, height: 40, backgroundColor: COLORS.primaryLight, borderRadius: 20, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
+  headerTitle: { fontSize: 16, fontWeight: '800', color: COLORS.text },
+  headerSub: { fontSize: 11, color: COLORS.accent, fontWeight: '600' },
+  onlineDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.accent },
+  reminderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, backgroundColor: COLORS.primaryLight, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  reminderText: { flex: 1, fontSize: 12, color: COLORS.primary, fontWeight: '600' },
+  list: { padding: SPACING.lg, paddingBottom: 16 },
+  row: { flexDirection: 'row', marginBottom: SPACING.md, alignItems: 'flex-end', gap: 8 },
+  rowAi: { justifyContent: 'flex-start', paddingRight: 40 },
+  rowUser: { justifyContent: 'flex-end', paddingLeft: 40 },
+  aiBubbleIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.card, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
+  userBubbleIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
+  bubble: { borderRadius: 18, padding: SPACING.md, maxWidth: '100%', gap: SPACING.sm },
+  bubbleAi: { backgroundColor: COLORS.card, borderBottomLeftRadius: 4, borderWidth: 1, borderColor: COLORS.border },
+  bubbleUser: { backgroundColor: COLORS.primary, borderBottomRightRadius: 4 },
+  bubbleText: { fontSize: 14, lineHeight: 21, fontWeight: '500' },
+  textAi: { color: COLORS.text },
+  textUser: { color: COLORS.white },
+  triagePill: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: BORDER_RADIUS.full, gap: 5, marginTop: 4 },
+  triageText: { fontSize: 10, fontWeight: '800' },
+  bookingBox: { backgroundColor: COLORS.cardAlt, borderRadius: BORDER_RADIUS.md, padding: SPACING.md, marginTop: SPACING.sm, borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)' },
+  bookingHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
+  bookingTitle: { fontSize: 13, fontWeight: '700', color: COLORS.danger },
+  bookingDesc: { fontSize: 12, color: COLORS.textSub, lineHeight: 18, marginBottom: SPACING.md },
+  authBtn: { borderRadius: BORDER_RADIUS.md, overflow: 'hidden' },
+  authBtnGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, gap: 4 },
+  authBtnText: { color: COLORS.white, fontSize: 13, fontWeight: '700' },
+  confirmedBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.successLight, padding: SPACING.sm, borderRadius: BORDER_RADIUS.md, gap: 6, marginTop: 6 },
+  confirmedText: { fontSize: 11, color: COLORS.accent, fontWeight: '700', flex: 1 },
+  quickRow: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: SPACING.lg, paddingBottom: 6, gap: 8 },
+  quickChip: { backgroundColor: COLORS.card, borderRadius: BORDER_RADIUS.full, paddingHorizontal: 14, paddingVertical: 7, borderWidth: 1, borderColor: COLORS.border },
+  quickChipText: { fontSize: 12, color: COLORS.textSub, fontWeight: '600' },
+  inputArea: { padding: SPACING.lg, paddingTop: 6 },
+  inputRow: { flexDirection: 'row', alignItems: 'flex-end', backgroundColor: COLORS.card, borderRadius: 28, padding: 6, borderWidth: 1, borderColor: COLORS.border },
+  input: { flex: 1, paddingHorizontal: SPACING.md, paddingVertical: 10, maxHeight: 100, fontSize: 14, color: COLORS.text },
+  sendBtn: { width: 44, height: 44, borderRadius: 22, overflow: 'hidden' },
+  sendBtnDisabled: { opacity: 0.5 },
+  sendGradient: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
 });

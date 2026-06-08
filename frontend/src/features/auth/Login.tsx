@@ -61,8 +61,8 @@ export const Login: React.FC = () => {
           <span className="demo-label">Demo Access — click any role to fill</span>
           <div className="demo-cards">
             {DEMO.map((c) => (
-              <button key={c.role} className="demo-card" style={{ borderColor: `${c.color}30` }}
-                onClick={() => fill(c)} type="button">
+              <div key={c.role} className="demo-card" style={{ borderColor: `${c.color}30`, cursor: 'pointer' }}
+                onClick={() => fill(c)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && fill(c)}>
                 <span className="demo-role" style={{ color: c.color }}>{c.role}</span>
                 <div className="demo-cred-row">
                   <span className="demo-cred-val">{c.email}</span>
@@ -78,7 +78,7 @@ export const Login: React.FC = () => {
                     {copied === c.role + 'p' ? <Check size={11}/> : <Copy size={11}/>}
                   </button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>

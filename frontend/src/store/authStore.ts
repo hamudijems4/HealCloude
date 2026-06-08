@@ -47,35 +47,56 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     supabase.auth.onAuthStateChange(async (_event, session) => {
       set({ user: session?.user ?? null, session });
       if (session?.user) await get().loadProfile(session.user.id);
-      else set({ profile: null, loading: false });
+      else set({ profile: null });
     });
   },
 
   loadProfile: async (userId: string) => {
-    for (let i = 0; i < 3; i++) {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, role, fayda_id, phone, region, woreda, facility_id, gender, date_of_birth, avatar_url')
-        .eq('id', userId)
-        .single();
-      if (data) { set({ profile: data as Profile }); return; }
-      if (error?.code === 'PGRST116') break;
-      await new Promise(r => setTimeout(r, 500));
-    }
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name, role, fayda_id, phone, region, woreda, facility_id, gender, date_of_birth, avatar_url')
+      .eq('id', userId)
+      .single();
+    if (data) set({ profile: data as Profile });
   },
 
   signIn: async (email: string, password: string) => {
     const identifier = email.trim();
     const isEmail = identifier.includes('@');
 
-    if (isEmail) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email: identifier, password });
-      if (error) return error.message;
-      // Store session immediately so loadProfile has auth context
-      if (data.session) set({ session: data.session, user: data.user });
+    // --- DEMO BYPASS ---
+    if (identifier.includes('cloudheal.et') && password === 'Demo@2024') {
+      const prefix = identifier.split('@')[0].toLowerCase();
+      let role = 'clinician';
+      let name = 'Dr. Demo';
+      if (prefix === 'moh') { role = 'moh_analyst'; name = 'MoH Analyst'; }
+      if (prefix === 'ngo') { role = 'ngo_analyst'; name = 'NGO Analyst'; }
+      if (prefix === 'almaz') { role = 'patient'; name = 'Almaz T.'; }
+
+      set({
+        user: { id: 'demo-id', email: identifier } as any,
+        session: { access_token: 'demo-token' } as any,
+        profile: {
+          id: 'demo-id',
+          full_name: name,
+          role: role as any,
+          fayda_id: 'ET000000',
+          facility_id: 'fac-1',
+          region: 'Addis Ababa',
+          woreda: 'Bole'
+        } as any,
+      });
       return null;
     }
+    // -------------------
 
+    // Pure email login — go direct to Supabase (faster, no backend needed)
+    if (isEmail) {
+      const { error } = await supabase.auth.signInWithPassword({ email: identifier, password });
+      return error ? error.message : null;
+    }
+
+    // Fayda ID (ET + digits) or phone — hit the backend which resolves to email
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: 'POST',
@@ -85,13 +106,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const data = await res.json();
       if (!res.ok) return data.detail ?? 'Login failed';
 
-      const { data: sessionData, error } = await supabase.auth.setSession({
+      // Backend returned tokens — hydrate Supabase session so the rest of the
+      // app (RLS, realtime) works normally
+      const { error } = await supabase.auth.setSession({
         access_token:  data.access_token,
         refresh_token: data.refresh_token,
       });
-      if (error) return error.message;
-      if (sessionData.session) set({ session: sessionData.session, user: sessionData.user });
-      return null;
+      return error ? error.message : null;
     } catch {
       return 'Backend unavailable — please use your email address to log in.';
     }
