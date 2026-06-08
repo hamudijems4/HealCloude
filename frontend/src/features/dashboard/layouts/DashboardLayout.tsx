@@ -12,21 +12,10 @@ import type { Permission } from '../../../rbac/permissions';
 import './DashboardLayout.css';
 
 const EthLogo = () => (
-  <svg width="36" height="36" viewBox="0 0 42 42" fill="none">
-    <rect width="42" height="42" rx="10" fill="url(#dlg)"/>
-    <defs><linearGradient id="dlg" x1="0" y1="0" x2="42" y2="42">
-      <stop offset="0%" stopColor="#1d4ed8"/><stop offset="100%" stopColor="#3b82f6"/>
-    </linearGradient></defs>
-    <clipPath id="dlc"><rect x="4" y="4" width="34" height="20" rx="3"/></clipPath>
-    <g clipPath="url(#dlc)">
-      <rect x="4" y="4"    width="34" height="6.6" fill="#22c55e"/>
-      <rect x="4" y="10.6" width="34" height="6.7" fill="#fbbf24"/>
-      <rect x="4" y="17.3" width="34" height="6.7" fill="#ef4444"/>
-    </g>
-    <circle cx="21" cy="14" r="6" fill="#1d4ed8" opacity="0.92"/>
-    <polygon points="21,9 22.2,12.6 26,12.6 23,14.8 24.2,18.4 21,16.2 17.8,18.4 19,14.8 16,12.6 19.8,12.6" fill="#fbbf24"/>
-    <polyline points="7,30 11,30 13.5,26 16,34 18.5,30 21.5,30 23,28 24.5,32 26,30 35,30"
-      stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+    <rect width="64" height="64" rx="14" fill="#1d4ed8"/>
+    <polyline points="10,34 18,34 22,22 28,46 33,34 38,34 41,28 44,40 48,34 54,34"
+      fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 

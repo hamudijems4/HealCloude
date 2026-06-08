@@ -5,23 +5,10 @@ import { useAuthStore } from '../../store/authStore';
 import './Login.css';
 
 const EthiopianLogo = () => (
-  <svg width="40" height="40" viewBox="0 0 42 42" fill="none">
-    <rect width="42" height="42" rx="12" fill="url(#lb)"/>
-    <defs>
-      <linearGradient id="lb" x1="0" y1="0" x2="42" y2="42">
-        <stop offset="0%" stopColor="#1d4ed8"/><stop offset="100%" stopColor="#2563eb"/>
-      </linearGradient>
-    </defs>
-    <clipPath id="lc"><rect x="4" y="4" width="34" height="22" rx="4"/></clipPath>
-    <g clipPath="url(#lc)">
-      <rect x="4" y="4"    width="34" height="7.3" fill="#22c55e"/>
-      <rect x="4" y="11.3" width="34" height="7.3" fill="#fbbf24"/>
-      <rect x="4" y="18.6" width="34" height="7.4" fill="#ef4444"/>
-    </g>
-    <circle cx="21" cy="15" r="7" fill="#1d4ed8" opacity="0.9"/>
-    <polygon points="21,9 22.47,13.51 27.18,13.51 23.36,16.24 24.83,20.75 21,18.02 17.17,20.75 18.64,16.24 14.82,13.51 19.53,13.51" fill="#fbbf24"/>
-    <polyline points="6,32 10,32 13,27 16,37 19,32 23,32 25,29 27,35 29,32 36,32"
-      stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  <svg width="40" height="40" viewBox="0 0 64 64" fill="none">
+    <rect width="64" height="64" rx="14" fill="#1d4ed8"/>
+    <polyline points="10,34 18,34 22,22 28,46 33,34 38,34 41,28 44,40 48,34 54,34"
+      fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
