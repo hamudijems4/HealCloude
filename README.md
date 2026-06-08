@@ -15,7 +15,9 @@
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![FHIR](https://img.shields.io/badge/HL7-FHIR%20R4-E84035?style=for-the-badge)](https://hl7.org/fhir)
 
-[**🚀 Live Demo**](https://cloudheal-national-ai-systems-layer-645048506630.europe-west1.run.app/) · [**📖 API Docs**](https://api.cloudheal.et/api/docs) · [**🎥 Demo Video**](#)
+[**🚀 Live Demo**](https://healcloude.vercel.app/) · [**📖 API Docs**](https://healcloude.vercel.app/api/docs) · [**🎥 Demo Video**](#)
+
+> 👉 **Judges:** [**Click here to open the live platform →**](https://healcloude.vercel.app/)
 
 </div>
 
