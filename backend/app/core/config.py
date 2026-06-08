@@ -5,7 +5,7 @@ from typing import List
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "TenaLink API"
+    APP_NAME: str = "CloudHeal API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
     API_V1_PREFIX: str = "/api/v1"
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     # MongoDB (FHIR unstructured resources)
     MONGO_URL: str
-    MONGO_DB: str = "tenalink_fhir"
+    MONGO_DB: str = "cloudheal_fhir"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
@@ -35,8 +35,12 @@ class Settings(BaseSettings):
     FAYDA_API_URL: str = "https://api.fayda.et/v1"
     FAYDA_API_KEY: str = ""
 
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    # CORS — stored as comma-separated string, converted to list at runtime
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+
+    @property
+    def allowed_origins_list(self) -> List[str]:
+        return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
 
     # Notifications
     AFRICASTALKING_KEY: str = ""

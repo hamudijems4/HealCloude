@@ -36,4 +36,5 @@ def require_roles(*roles: UserRole):
 
 require_moh = require_roles(UserRole.MOH_ANALYST, UserRole.SUPER_ADMIN)
 require_clinician = require_roles(UserRole.CLINICIAN, UserRole.FACILITY_ADMIN, UserRole.SUPER_ADMIN)
+require_ngo = require_roles(UserRole.NGO_ANALYST, UserRole.MOH_ANALYST, UserRole.SUPER_ADMIN)
 require_admin = require_roles(UserRole.SUPER_ADMIN)

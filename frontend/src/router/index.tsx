@@ -1,86 +1,162 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+/* eslint-disable react-refresh/only-export-components */
+import React from 'react';
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { useAuthStore } from '../store/authStore';
+import { usePermissions } from '../rbac/usePermissions';
+import { RoleGuard } from '../rbac/RoleGuard';
 
-// Layouts
-const AuthLayout = lazy(() => import('../features/auth/layouts/AuthLayout').then(m => ({ default: m.AuthLayout })));
-const DashboardLayout = lazy(() => import('../features/dashboard/layouts/DashboardLayout').then(m => ({ default: m.DashboardLayout })));
-
-// Pages
-const Login = lazy(() => import('../features/auth/Login').then(m => ({ default: m.Login })));
-const Dashboard = lazy(() => import('../features/dashboard/Dashboard').then(m => ({ default: m.Dashboard })));
-const CandidatesPage = lazy(() => import('../features/candidates/CandidatesPage').then(m => ({ default: m.CandidatesPage })));
-const VisasPage = lazy(() => import('../features/visas/VisasPage').then(m => ({ default: m.VisasPage })));
-const JobsPage = lazy(() => import('../features/jobs/JobsPage').then(m => ({ default: m.JobsPage })));
-const FlightsPage = lazy(() => import('../features/flights/FlightsPage').then(m => ({ default: m.FlightsPage })));
-const PassportsPage = lazy(() => import('../features/passports/PassportsPage').then(m => ({ default: m.PassportsPage })));
-const PaymentsPage = lazy(() => import('../features/payments/PaymentsPage').then(m => ({ default: m.PaymentsPage })));
-const UmrahPage = lazy(() => import('../features/umrah/UmrahPage').then(m => ({ default: m.UmrahPage })));
-const HotelsPage = lazy(() => import('../features/hotels/HotelsPage').then(m => ({ default: m.HotelsPage })));
-const GroupsPage = lazy(() => import('../features/groups/GroupsPage').then(m => ({ default: m.GroupsPage })));
-const ReportsPage = lazy(() => import('../features/reports/ReportsPage').then(m => ({ default: m.ReportsPage })));
-const PackagesPage = lazy(() => import('../features/packages/PackagesPage').then(m => ({ default: m.PackagesPage })));
-const WorkersPage = lazy(() => import('../features/workers/WorkersPage').then(m => ({ default: m.WorkersPage })));
-const AdminsPage = lazy(() => import('../features/admins/AdminsPage').then(m => ({ default: m.AdminsPage })));
-const BranchesPage = lazy(() => import('../features/branches/BranchesPage').then(m => ({ default: m.BranchesPage })));
-const OrdersPage = lazy(() => import('../features/orders/OrdersPage').then(m => ({ default: m.OrdersPage })));
-const PRPage = lazy(() => import('../features/pr/PRPage').then(m => ({ default: m.PRPage })));
-const HRPage = lazy(() => import('../features/hr/HRPage').then(m => ({ default: m.HRPage })));
-
-// Loading Component
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-surface">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', background:'#f0f6ff' }}>
+    <div style={{ width:40, height:40, border:'3px solid #dbeafe', borderTopColor:'#2563eb', borderRadius:'50%', animation:'spin 0.7s linear infinite' }}/>
+    <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
   </div>
 );
 
-const withSuspense = (Component: React.ComponentType) => (
-  <Suspense fallback={<PageLoader />}>
-    <Component />
-  </Suspense>
+const w = (C: React.ComponentType) => (
+  <Suspense fallback={<PageLoader/>}><C/></Suspense>
 );
 
+/** Redirects logged-out users to /login */
+const AuthGuard = () => {
+  const { user, loading } = useAuthStore();
+  if (loading) return <PageLoader/>;
+  return user ? <Outlet/> : <Navigate to="/login" replace/>;
+};
+
+/** After login, redirect / to the role's home route */
+const RoleHomeRedirect = () => {
+  const { homeRoute } = usePermissions();
+  return <Navigate to={homeRoute} replace/>;
+};
+
+// ── Lazy imports ──
+const Landing           = lazy(() => import('../features/landing/Landing').then(m => ({ default: m.Landing })));
+const Login             = lazy(() => import('../features/auth/Login').then(m => ({ default: m.Login })));
+const DashboardLayout   = lazy(() => import('../features/dashboard/layouts/DashboardLayout').then(m => ({ default: m.DashboardLayout })));
+
+// Role home dashboards
+const MoHDashboard      = lazy(() => import('../features/dashboard/Dashboard').then(m => ({ default: m.Dashboard })));
+const PatientHome       = lazy(() => import('../features/dashboard/homes/PatientHome').then(m => ({ default: m.PatientHome })));
+const ClinicianHome     = lazy(() => import('../features/dashboard/homes/ClinicianHome').then(m => ({ default: m.ClinicianHome })));
+const NGOHome           = lazy(() => import('../features/dashboard/homes/NGOHome').then(m => ({ default: m.NGOHome })));
+
+// Shared pages
+const PatientsPage      = lazy(() => import('../features/patients/PatientsPage').then(m => ({ default: m.PatientsPage })));
+const PatientDetail     = lazy(() => import('../features/patients/PatientDetail').then(m => ({ default: m.PatientDetail })));
+const AppointmentsPage  = lazy(() => import('../features/appointments/AppointmentsPage').then(m => ({ default: m.AppointmentsPage })));
+const WellnessPage      = lazy(() => import('../features/wellness/WellnessPage').then(m => ({ default: m.WellnessPage })));
+const HealthBotPage     = lazy(() => import('../features/healthbot/HealthBotPage').then(m => ({ default: m.HealthBotPage })));
+const DiseaseMapPage    = lazy(() => import('../features/disease-map/DiseaseMapPage').then(m => ({ default: m.DiseaseMapPage })));
+const AlertsPage        = lazy(() => import('../features/alerts/AlertsPage').then(m => ({ default: m.AlertsPage })));
+const FacilitiesPage    = lazy(() => import('../features/facilities/FacilitiesPage').then(m => ({ default: m.FacilitiesPage })));
+const FHIRPage          = lazy(() => import('../features/fhir/FHIRPage').then(m => ({ default: m.FHIRPage })));
+const USSDPage          = lazy(() => import('../features/ussd/USSDPage').then(m => ({ default: m.USSDPage })));
+const ReportsPage       = lazy(() => import('../features/reports/ReportsPage').then(m => ({ default: m.ReportsPage })));
+const SettingsPage      = lazy(() => import('../features/settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
+
 export const router = createBrowserRouter([
+  { path: '/',      element: w(Landing) },
+  { path: '/login', element: w(Login)   },
   {
-    path: '/',
-    element: <Navigate to="/login" replace />,
-  },
-  {
-    path: '/login',
-    element: withSuspense(AuthLayout),
-    children: [
-      {
-        path: '',
-        element: withSuspense(Login),
-      },
-    ],
-  },
-  {
-    path: '/dashboard',
-    element: withSuspense(DashboardLayout),
-    children: [
-      {
-        path: '',
-        element: withSuspense(Dashboard),
-      },
-      { path: 'patients',     element: withSuspense(CandidatesPage) },
-      { path: 'wellness',      element: withSuspense(PassportsPage) },
-      { path: 'ai-risk',       element: withSuspense(VisasPage) },
-      { path: 'disease-map',   element: withSuspense(ReportsPage) },
-      { path: 'alerts',        element: withSuspense(OrdersPage) },
-      { path: 'fhir',          element: withSuspense(PackagesPage) },
-      { path: 'facilities',    element: withSuspense(BranchesPage) },
-      { path: 'clinicians',    element: withSuspense(WorkersPage) },
-      { path: 'ussd',          element: withSuspense(PRPage) },
-      { path: 'fayda',         element: withSuspense(AdminsPage) },
-      { path: 'appointments',  element: withSuspense(UmrahPage) },
-      { path: 'labs',          element: withSuspense(FlightsPage) },
-      { path: 'medications',   element: withSuspense(HotelsPage) },
-      { path: 'surveillance',  element: withSuspense(GroupsPage) },
-      { path: 'supplies',      element: withSuspense(PaymentsPage) },
-      { path: 'reports',       element: withSuspense(ReportsPage) },
-      { path: 'hr',            element: withSuspense(HRPage) },
-      { path: 'tasks',         element: <div className="p-8 text-gray-500">Follow-up Tasks — Coming Soon</div> },
-      { path: 'settings',      element: <div className="p-8 text-gray-500">System Settings — Coming Soon</div> },
-    ],
+    element: <AuthGuard/>,
+    children: [{
+      path: '/dashboard',
+      element: w(DashboardLayout),
+      children: [
+        // Root /dashboard → redirect to role's home
+        { path: '', element: <RoleHomeRedirect/> },
+
+        // ── MoH / super_admin home ──
+        {
+          path: 'home',
+          element: <RoleGuard require="view_moh_dashboard">{w(MoHDashboard)}</RoleGuard>,
+        },
+
+        // ── NGO home ──
+        {
+          path: 'ngo',
+          element: <RoleGuard require="view_disease_map">{w(NGOHome)}</RoleGuard>,
+        },
+
+        // ── Patient personal portal ──
+        {
+          path: 'my-health',
+          element: <RoleGuard require="view_own_health">{w(PatientHome)}</RoleGuard>,
+        },
+        {
+          path: 'my-appointments',
+          element: <RoleGuard require="view_own_appointments">{w(AppointmentsPage)}</RoleGuard>,
+        },
+        {
+          path: 'my-wellness',
+          element: <RoleGuard require="view_own_wellness">{w(WellnessPage)}</RoleGuard>,
+        },
+
+        // ── Clinician home ──
+        {
+          path: 'my-patients',
+          element: <RoleGuard require="view_all_patients">{w(ClinicianHome)}</RoleGuard>,
+        },
+
+        // ── Clinical (clinician / facility_admin / moh) ──
+        {
+          path: 'patients',
+          element: <RoleGuard require="view_all_patients">{w(PatientsPage)}</RoleGuard>,
+        },
+        {
+          path: 'patients/:id',
+          element: <RoleGuard require="view_patient_detail">{w(PatientDetail)}</RoleGuard>,
+        },
+        {
+          path: 'appointments',
+          element: <RoleGuard require="manage_appointments">{w(AppointmentsPage)}</RoleGuard>,
+        },
+        {
+          path: 'wellness',
+          element: <RoleGuard require="view_all_wellness">{w(WellnessPage)}</RoleGuard>,
+        },
+        {
+          path: 'healthbot',
+          element: <RoleGuard require="use_healthbot">{w(HealthBotPage)}</RoleGuard>,
+        },
+        {
+          path: 'fhir',
+          element: <RoleGuard require="view_fhir_records">{w(FHIRPage)}</RoleGuard>,
+        },
+
+        // ── Surveillance (moh / ngo) ──
+        {
+          path: 'disease-map',
+          element: <RoleGuard require="view_disease_map">{w(DiseaseMapPage)}</RoleGuard>,
+        },
+        {
+          path: 'alerts',
+          element: <RoleGuard require="view_disease_alerts">{w(AlertsPage)}</RoleGuard>,
+        },
+
+        // ── Infrastructure ──
+        {
+          path: 'facilities',
+          element: <RoleGuard require="view_facilities">{w(FacilitiesPage)}</RoleGuard>,
+        },
+        {
+          path: 'ussd',
+          element: <RoleGuard require="view_ussd">{w(USSDPage)}</RoleGuard>,
+        },
+
+        // ── Analytics ──
+        {
+          path: 'reports',
+          element: <RoleGuard require="view_reports">{w(ReportsPage)}</RoleGuard>,
+        },
+
+        // ── Universal ──
+        {
+          path: 'settings',
+          element: <RoleGuard require="view_settings">{w(SettingsPage)}</RoleGuard>,
+        },
+      ],
+    }],
   },
 ]);

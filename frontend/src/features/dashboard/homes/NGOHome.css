@@ -1,0 +1,45 @@
+.ngo { display:flex; flex-direction:column; gap:1.25rem; }
+
+.ngo__header { display:flex; justify-content:space-between; align-items:flex-start; }
+.ngo__header h1 { font-size:1.4rem; font-weight:700; color:#0f1f3d; }
+.ngo__header p  { font-size:0.83rem; color:#64748b; margin-top:2px; }
+
+.ngo__role-badge {
+  display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem;
+}
+.ngo__role-badge span:first-child {
+  font-size:0.78rem; font-weight:700; color:#d97706;
+  background:#fff7ed; padding:0.25rem 0.75rem; border-radius:50px;
+  border:1px solid #fed7aa;
+}
+.ngo__data-note { font-size:0.72rem; color:#94a3b8; }
+
+.ngo__kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.ngo__kpi {
+  background:white; border-radius:14px; padding:1rem 1.25rem;
+  border:1px solid #e2eaf6; border-left:4px solid;
+  display:flex; align-items:center; gap:0.85rem;
+}
+.ngo__kpi-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+.ngo__charts { display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; }
+.ngo__chart-card { overflow:hidden; padding:0; }
+.ngo__chart-card--wide { grid-column:1; }
+.ngo__chart-header { padding:1rem 1.5rem 0.5rem; }
+.ngo__chart-header h3 { font-size:0.95rem; font-weight:700; color:#0f1f3d; }
+.ngo__chart-header p  { font-size:0.75rem; color:#94a3b8; margin-top:2px; }
+
+.ngo__actions { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.ngo__action-card {
+  padding:1.1rem 1.25rem; border-top:3px solid;
+  display:flex; align-items:center; gap:0.85rem;
+  cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;
+}
+.ngo__action-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+.ngo__action-icon {
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; font-weight:700; flex-shrink:0;
+}
+.ngo__action-label { font-size:0.85rem; font-weight:600; color:#0f1f3d; }
+.ngo__action-desc  { font-size:0.72rem; color:#94a3b8; margin-top:2px; }

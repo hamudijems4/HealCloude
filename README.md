@@ -1,10 +1,40 @@
-# TenaLink 🏥
+# CloudHeal 🏥
 > Ethiopia's National Health Interoperability & AI Wellness Platform — ALX Wellness Hackathon 2024
 
-## Architecture
+## 🎯 Mission
+
+**Connect Ethiopia's fragmented healthcare under one cloud.** Every mother. Every baby. Every clinic.
+
+## 🌟 What CloudHeal Does
+
+- **FHIR Interoperability** — Connects ANY hospital system (EMR, Excel, Paper) without forcing migration
+- **Fayda ID Integration** — One national ID = one medical passport across all facilities
+- **AI Wellness Engine** — Predicts risks, schedules appointments, sends personalized nudges
+- **USSD/SMS Reach** — Works for the farmer in the West AND the banker in the East
+- **MoH God-View** — Real-time disease surveillance and outbreak prediction
+- **Offline-First** — Rural clinics work without internet, auto-sync when connected
+
+## 🎯 Target Users
+
+| User | Value |
+|------|-------|
+| **Mothers (Almaz)** | Prenatal reminders, unified health history, FREE |
+| **Clinicians (Dr. Kebede)** | Instant access to patient history from all facilities |
+| **MoH (Tigist)** | Real-time national health surveillance & outbreak alerts |
+
+## 💰 Revenue Model
 
 ```
-tenalink/
+🏛️ Government  → MoH dashboard subscription + data licensing
+🌍 NGOs        → Research data access + regional health reports
+🏥 Hospitals   → API integration fees
+👩🍼 Patients   → FREE. ALWAYS.
+```
+
+## 🏗️ Architecture
+
+```
+cloudheal/
 ├── backend/                  # FastAPI (Python 3.12)
 │   └── app/
 │       ├── api/v1/           # Route handlers
@@ -16,97 +46,97 @@ tenalink/
 │       │   └── fhir/         # HL7 FHIR Pydantic resources
 │       ├── schemas/          # Request/response schemas
 │       ├── services/
-│       │   ├── ai/           # Risk engine + TenaBot LLM
+│       │   ├── ai/           # Risk engine + HealthBot LLM
 │       │   ├── fhir/         # FHIR translator
 │       │   └── notifications/# SMS/USSD via Africa's Talking
 │       └── middleware/       # Logging, correlation IDs
-├── frontend/                 # Next.js 14 + Tailwind
+├── frontend/                 # React + Vite + TypeScript
 │   └── src/
-│       ├── app/              # App Router pages
-│       │   ├── auth/login/   # Fayda ID / email / phone login
+│       ├── features/
+│       │   ├── landing/      # Stunning animated landing page
+│       │   ├── auth/         # Login with Fayda ID
 │       │   ├── dashboard/    # MoH "God-View" dashboard
-│       │   └── patient/      # Patient portal + TenaBot chat
-│       ├── components/
-│       │   ├── charts/       # Recharts trend charts
-│       │   ├── maps/         # Leaflet wellness heatmap
-│       │   └── shared/       # Sidebar, layout
-│       ├── hooks/            # React Query hooks
-│       ├── store/            # Zustand auth store
-│       └── types/            # Shared TypeScript types
+│       │   └── patient/      # Patient portal + HealthBot chat
+│       ├── router/           # React Router setup
+│       └── App.tsx
 ├── infra/docker/             # Dockerfiles
 ├── scripts/                  # Mock data generator
 └── docker-compose.yml
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
-- Docker + Docker Compose
-- Node.js 20+, Python 3.12+
+- Node.js 20+
+- Python 3.12+
+- Supabase account (or Docker for local)
 
-### 1. Clone & configure
+### 1. Clone & Configure
 ```bash
 cp backend/.env.example backend/.env
-# Edit backend/.env with your secrets
+# Edit backend/.env with your Supabase credentials
 ```
 
-### 2. Start with Docker
+### 2. Start Frontend
 ```bash
-docker-compose up --build
-```
-
-### 3. Local dev (no Docker)
-```bash
-# Backend
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-
-# Frontend (new terminal)
 cd frontend
 npm install
 npm run dev
 ```
 
-### 4. Generate mock data
+### 3. Start Backend
 ```bash
-cd scripts
-python generate_mock_data.py
+cd backend
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
 
-## URLs
+## 📍 URLs
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3000 |
+| Frontend | http://localhost:5173 |
 | API Docs | http://localhost:8000/api/docs |
-| MoH Dashboard | http://localhost:3000/dashboard |
-| Patient Portal | http://localhost:3000/patient |
+| Landing | http://localhost:5173/ |
+| MoH Dashboard | http://localhost:5173/dashboard |
 
-## Demo Credentials
+## 🔑 Demo Credentials
 | Role | Identifier | Password |
 |------|-----------|----------|
-| MoH Analyst | moh@tenalink.et | password123 |
+| MoH Analyst | moh@cloudheal.et | password123 |
 | Patient | ET8823710293 | password123 |
-| Clinician | clinic@tenalink.et | password123 |
+| Clinician | clinic@cloudheal.et | password123 |
 
-## Key APIs
+## 🔌 Key APIs
 ```
 POST /api/v1/auth/login          — Login (Fayda ID / email / phone)
 POST /api/v1/wellness/risk-score — AI wellness risk prediction
-POST /api/v1/wellness/chat       — TenaBot AI chat
+POST /api/v1/wellness/chat       — HealthBot AI chat
 GET  /api/v1/moh/summary         — National health summary
 GET  /api/v1/moh/regional-stats  — Per-region wellness stats
 GET  /api/v1/moh/disease-alerts  — Active outbreak alerts
 GET  /api/v1/patients/{id}/fhir-bundle — FHIR patient bundle
 ```
 
-## Tech Stack
-- **Backend**: FastAPI, SQLAlchemy 2 (async), Motor (MongoDB), Pydantic v2
+## 🛠️ Tech Stack
+- **Backend**: FastAPI, SQLAlchemy 2 (async), Pydantic v2
 - **AI**: Rule-based risk engine + Ollama/Llama3 chatbot
-- **Frontend**: Next.js 14 (App Router), Tailwind CSS, shadcn patterns, Recharts, React-Leaflet
-- **State**: Zustand + TanStack Query
-- **Auth**: JWT (HS256) + Fayda ID integration ready
-- **Databases**: PostgreSQL (relational) + MongoDB (FHIR resources)
-- **Notifications**: Africa's Talking (SMS/USSD fallback)
-- **Infra**: Docker Compose, ready for AWS ECS / Railway
+- **Frontend**: React 19, TypeScript, Vite, Recharts, Lucide Icons
+- **Auth**: Supabase Auth + Fayda ID integration ready
+- **Databases**: PostgreSQL (Supabase) + MongoDB (FHIR resources)
+- **Notifications**: Africa's Talking (SMS/USSD)
+
+## 📊 Focus: Maternal & Infant Health
+
+CloudHeal's primary mission is to **reduce infant mortality** in Ethiopia through:
+- ✅ AI-powered prenatal visit reminders via USSD
+- ✅ Unified health records for mothers across all clinics
+- ✅ Real-time maternal risk zone mapping for MoH
+- ✅ NGO-funded intervention targeting
+
+---
+
+**One Fayda ID. One History. One Cloud.**
+
+Built with ❤️ for Ethiopia's mothers and babies.

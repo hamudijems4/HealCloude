@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from sqlalchemy import text
 from app.core.config import settings
-from app.core.database import engine, Base
+from app.core.database import engine
 from app.middleware.logging import RequestLoggingMiddleware
 from app.api.v1.endpoints import auth, wellness, patients, moh
 import logging
@@ -12,8 +13,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Tables are managed by Supabase migrations — skip create_all
+    # Just verify the DB connection is alive
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        logging.getLogger(__name__).info("Database connection OK")
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"Database connection warning: {e}")
     yield
     await engine.dispose()
 
@@ -30,7 +37,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_origins=settings.allowed_origins_list,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

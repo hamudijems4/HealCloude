@@ -1,0 +1,89 @@
+.cl { display:flex; flex-direction:column; gap:1.25rem; }
+
+.cl__header h1 { font-size:1.4rem; font-weight:700; color:#0f1f3d; }
+.cl__header p  { font-size:0.83rem; color:#64748b; margin-top:2px; }
+
+.cl__kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.cl__kpi {
+  background:white; border-radius:14px; padding:1rem 1.25rem;
+  border:1px solid #e2eaf6; border-left:4px solid;
+  display:flex; align-items:center; gap:0.85rem;
+}
+.cl__kpi-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+.cl__body { display:grid; grid-template-columns:1fr 300px; gap:1.25rem; align-items:start; }
+
+/* Queue */
+.cl__queue { overflow:hidden; padding:0; }
+.cl__queue-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.5rem; border-bottom:1px solid #e2eaf6;
+}
+.cl__queue-header h3 { font-size:0.95rem; font-weight:700; color:#0f1f3d; }
+
+.cl__search {
+  display:flex; align-items:center; gap:0.4rem;
+  background:#f0f6ff; border:1px solid #dbeafe; border-radius:8px;
+  padding:0.4rem 0.75rem; color:#93c5fd;
+}
+.cl__search input { border:none; background:transparent; outline:none; font-size:0.8rem; color:#0f1f3d; font-family:'DM Sans',sans-serif; width:160px; }
+
+.cl__table { width:100%; border-collapse:collapse; }
+.cl__table th {
+  padding:0.65rem 1.25rem; text-align:left;
+  font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
+  color:#94a3b8; background:#f8fbff; border-bottom:1px solid #e2eaf6;
+}
+.cl__table td { padding:0.85rem 1.25rem; border-bottom:1px solid #f0f6ff; vertical-align:middle; }
+.cl__row { cursor:pointer; transition:background 0.15s; }
+.cl__row:hover { background:#f8fbff; }
+.cl__row:last-child td { border-bottom:none; }
+
+.cl__patient { display:flex; align-items:center; gap:0.65rem; }
+.cl__avatar { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; flex-shrink:0; }
+.cl__name { font-weight:600; font-size:0.85rem; color:#0f1f3d; }
+.cl__meta { font-size:0.72rem; color:#94a3b8; }
+.cl__fayda { font-family:monospace; }
+.cl__condition { font-size:0.82rem; color:#475569; }
+.cl__time { font-size:0.82rem; color:#64748b; white-space:nowrap; }
+
+.cl__status { display:inline-flex; align-items:center; padding:0.2rem 0.6rem; border-radius:50px; font-size:0.7rem; font-weight:600; }
+.cl__status--waiting { background:#f1f5f9; color:#64748b; }
+.cl__status--active  { background:#dcfce7; color:#15803d; }
+
+.cl__view {
+  width:28px; height:28px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  background:#f0f6ff; border:1px solid #dbeafe; color:#2563eb; cursor:pointer;
+  transition:all 0.15s;
+}
+.cl__view:hover { background:#dbeafe; }
+
+/* Right panel */
+.cl__right { display:flex; flex-direction:column; gap:1.25rem; }
+
+.cl__fayda-card { padding:1.25rem; display:flex; flex-direction:column; gap:0.75rem; }
+.cl__fayda-card h3 { font-size:0.95rem; font-weight:700; color:#0f1f3d; }
+.cl__fayda-card p  { font-size:0.78rem; color:#64748b; line-height:1.5; }
+.cl__fayda-form { display:flex; flex-direction:column; gap:0.5rem; }
+.cl__fayda-input {
+  padding:0.6rem 0.85rem; border:1px solid #dbeafe; border-radius:9px;
+  font-size:0.88rem; font-family:monospace; color:#0f1f3d; outline:none;
+  letter-spacing:0.05em;
+}
+.cl__fayda-input:focus { border-color:#2563eb; box-shadow:0 0 0 3px #dbeafe; }
+.cl__fayda-hint { font-size:0.7rem; color:#94a3b8; }
+
+.cl__alerts-card { padding:1.25rem; }
+.cl__alerts-card h3 { font-size:0.88rem; font-weight:700; color:#0f1f3d; display:flex; align-items:center; gap:0.4rem; margin-bottom:0.75rem; }
+.cl__urgent-list { display:flex; flex-direction:column; gap:0.5rem; }
+.cl__urgent-row {
+  display:flex; align-items:center; gap:0.65rem;
+  padding:0.6rem 0.75rem; background:#fef9f0; border-radius:8px;
+  cursor:pointer; transition:background 0.15s;
+}
+.cl__urgent-row:hover { background:#ffedd5; }
+.cl__urgent-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.cl__urgent-info { flex:1; min-width:0; }
+.cl__urgent-name { display:block; font-size:0.82rem; font-weight:600; color:#0f1f3d; }
+.cl__urgent-cond { font-size:0.72rem; color:#64748b; }

@@ -1,122 +1,231 @@
-import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, Users, BookOpen, Activity,
-  PieChart, CheckSquare, Settings, Bell, Search, Plus, Mail,
-  Users2, Shield, Building2, PackageOpen,
-  TrendingUp, HeartPulse, Brain, AlertTriangle,
-  MapPin, Smartphone, FlaskConical, Pill
+import React, { useState } from 'react';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard, Users, Activity, MapPin, AlertTriangle,
+  HeartPulse, Building2, Smartphone, Calendar, PieChart,
+  Settings, Bell, Search, LogOut, MessageCircle,
+  ChevronDown, Menu, X, Heart, FileText,
 } from 'lucide-react';
+import { useAuthStore } from '../../../store/authStore';
+import { usePermissions } from '../../../rbac/usePermissions';
+import type { Permission } from '../../../rbac/permissions';
 import './DashboardLayout.css';
 
+const EthLogo = () => (
+  <svg width="36" height="36" viewBox="0 0 42 42" fill="none">
+    <rect width="42" height="42" rx="10" fill="url(#dlg)"/>
+    <defs><linearGradient id="dlg" x1="0" y1="0" x2="42" y2="42">
+      <stop offset="0%" stopColor="#1d4ed8"/><stop offset="100%" stopColor="#3b82f6"/>
+    </linearGradient></defs>
+    <clipPath id="dlc"><rect x="4" y="4" width="34" height="20" rx="3"/></clipPath>
+    <g clipPath="url(#dlc)">
+      <rect x="4" y="4"    width="34" height="6.6" fill="#22c55e"/>
+      <rect x="4" y="10.6" width="34" height="6.7" fill="#fbbf24"/>
+      <rect x="4" y="17.3" width="34" height="6.7" fill="#ef4444"/>
+    </g>
+    <circle cx="21" cy="14" r="6" fill="#1d4ed8" opacity="0.92"/>
+    <polygon points="21,9 22.2,12.6 26,12.6 23,14.8 24.2,18.4 21,16.2 17.8,18.4 19,14.8 16,12.6 19.8,12.6" fill="#fbbf24"/>
+    <polyline points="7,30 11,30 13.5,26 16,34 18.5,30 21.5,30 23,28 24.5,32 26,30 35,30"
+      stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+interface NavItem {
+  icon: React.ElementType;
+  label: string;
+  path: string;
+  require: Permission;
+}
+interface NavSection {
+  section: string;
+  roles?: string[];
+}
+type NavEntry = NavItem | NavSection;
+
+const NAV: NavEntry[] = [
+  // MoH / super_admin national view
+  { section: 'Overview' },
+  { icon: LayoutDashboard, label: 'National Dashboard',  path: '/dashboard',              require: 'view_moh_dashboard'  },
+  { icon: PieChart,        label: 'Reports',             path: '/dashboard/reports',       require: 'view_reports'        },
+
+  // NGO research
+  { section: 'Research' },
+  { icon: LayoutDashboard, label: 'NGO Dashboard',       path: '/dashboard/ngo',           require: 'view_disease_map'    },
+
+  // Patient personal
+  { section: 'My Health' },
+  { icon: Heart,           label: 'My Health',           path: '/dashboard/my-health',     require: 'view_own_health'     },
+  { icon: Calendar,        label: 'My Appointments',     path: '/dashboard/my-appointments',require:'view_own_appointments'},
+  { icon: HeartPulse,      label: 'My Wellness',         path: '/dashboard/my-wellness',   require: 'view_own_wellness'   },
+
+  // Clinician / facility
+  { section: 'Patients & Care' },
+  { icon: Users,           label: 'Patient Queue',       path: '/dashboard/my-patients',   require: 'view_all_patients'   },
+  { icon: Users,           label: 'All Patients',        path: '/dashboard/patients',      require: 'view_all_patients'   },
+  { icon: Calendar,        label: 'Appointments',        path: '/dashboard/appointments',  require: 'manage_appointments' },
+  { icon: HeartPulse,      label: 'Wellness Scores',     path: '/dashboard/wellness',      require: 'view_all_wellness'   },
+  { icon: MessageCircle,   label: 'HealthBot AI',        path: '/dashboard/healthbot',     require: 'use_healthbot'       },
+
+  // Surveillance
+  { section: 'Surveillance' },
+  { icon: MapPin,          label: 'Disease Map',         path: '/dashboard/disease-map',   require: 'view_disease_map'    },
+  { icon: AlertTriangle,   label: 'Disease Alerts',      path: '/dashboard/alerts',        require: 'view_disease_alerts' },
+
+  // Infrastructure
+  { section: 'Infrastructure' },
+  { icon: Building2,       label: 'Health Facilities',   path: '/dashboard/facilities',    require: 'view_facilities'     },
+  { icon: Smartphone,      label: 'USSD / SMS',          path: '/dashboard/ussd',          require: 'view_ussd'           },
+  { icon: Activity,        label: 'FHIR Records',        path: '/dashboard/fhir',          require: 'view_fhir_records'   },
+  { icon: FileText,        label: 'Reports',             path: '/dashboard/reports',       require: 'view_reports'        },
+
+  // Settings always last
+  { section: 'Account' },
+  { icon: Settings,        label: 'Settings',            path: '/dashboard/settings',      require: 'view_settings'       },
+];
+
+const ROLE_COLORS: Record<string, string> = {
+  patient:        '#059669',
+  clinician:      '#0891b2',
+  facility_admin: '#7c3aed',
+  moh_analyst:    '#2563eb',
+  ngo_analyst:    '#d97706',
+  super_admin:    '#dc2626',
+};
+
 export const DashboardLayout: React.FC = () => {
-  const navItems = [
-    { icon: LayoutDashboard, label: 'MoH Dashboard',        path: '/dashboard' },
-    { icon: Users,           label: 'Patients',             path: '/dashboard/patients' },
-    { icon: HeartPulse,      label: 'Wellness Scores',      path: '/dashboard/wellness' },
-    { icon: Brain,           label: 'AI Risk Engine',       path: '/dashboard/ai-risk' },
-    { icon: MapPin,          label: 'Disease Map',          path: '/dashboard/disease-map' },
-    { icon: AlertTriangle,   label: 'Disease Alerts',       path: '/dashboard/alerts' },
-    { icon: Activity,        label: 'FHIR Records',         path: '/dashboard/fhir' },
-    { icon: Building2,       label: 'Health Facilities',    path: '/dashboard/facilities' },
-    { icon: Users2,          label: 'Clinicians',           path: '/dashboard/clinicians' },
-    { icon: Smartphone,      label: 'USSD / SMS',           path: '/dashboard/ussd' },
-    { icon: Shield,          label: 'Fayda ID Registry',   path: '/dashboard/fayda' },
-    { icon: BookOpen,        label: 'Appointments',         path: '/dashboard/appointments' },
-    { icon: FlaskConical,    label: 'Lab Results',          path: '/dashboard/labs' },
-    { icon: Pill,            label: 'Medications',          path: '/dashboard/medications' },
-    { icon: TrendingUp,      label: 'Outbreak Surveillance',path: '/dashboard/surveillance' },
-    { icon: PackageOpen,     label: 'Medical Supplies',     path: '/dashboard/supplies' },
-    { icon: PieChart,        label: 'Reports & Analytics',  path: '/dashboard/reports' },
-    { icon: CheckSquare,     label: 'Follow-up Tasks',      path: '/dashboard/tasks' },
-    { icon: Settings,        label: 'System Settings',      path: '/dashboard/settings' },
-  ];
+  const { profile, signOut } = useAuthStore();
+  const { can, meta, role }  = usePermissions();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleSignOut = async () => { await signOut(); navigate('/login'); };
+
+  // Build visible nav — deduplicate paths, filter by permission, collapse empty sections
+  const visibleNav = (() => {
+    const result: NavEntry[] = [];
+    const seenPaths = new Set<string>();
+    let pendingSection: NavSection | null = null;
+
+    for (const item of NAV) {
+      if ('section' in item) {
+        pendingSection = item;
+        continue;
+      }
+      if (!can(item.require)) continue;
+      if (seenPaths.has(item.path)) continue;
+      seenPaths.add(item.path);
+
+      if (pendingSection) {
+        result.push(pendingSection);
+        pendingSection = null;
+      }
+      result.push(item);
+    }
+    return result;
+  })();
+
+  const roleColor = ROLE_COLORS[role] ?? '#2563eb';
 
   return (
-    <div className="dashboard-layout">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="logo-icon-img">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="24" height="24" rx="6" fill="#5c59f0"/>
-              <path d="M12 5 L12 19 M7 10 Q12 5 17 10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <div className="logo-text">
-            <h2>TenaLink</h2>
-            <span>National Health Platform</span>
-          </div>
+    <div className={`dl ${sidebarOpen ? 'dl--open' : 'dl--collapsed'}`}>
+
+      {/* ── SIDEBAR ── */}
+      <aside className="dl-sidebar">
+        <div className="dl-sidebar__head">
+          <EthLogo/>
+          {sidebarOpen && (
+            <div className="dl-brand">
+              <span className="dl-brand__name">CloudHeal</span>
+              <span className="dl-brand__sub">National Health Platform</span>
+            </div>
+          )}
+          <button className="dl-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            {sidebarOpen ? <X size={16}/> : <Menu size={16}/>}
+          </button>
         </div>
-        
-        <div className="sidebar-scrollable">
-          <nav className="sidebar-nav">
-            {navItems.map((item) => (
-              <NavLink 
-                key={item.path} 
-                to={item.path} 
-                end={item.path === '/dashboard'}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-              >
-                {({ isActive }) => (
-                  <>
-                    <item.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
-                    <span>{item.label}</span>
-                  </>
-                )}
-              </NavLink>
-            ))}
+
+        {/* Role badge strip */}
+        {sidebarOpen && (
+          <div className="dl-role-strip" style={{ background: `${roleColor}12`, borderBottom: `1px solid ${roleColor}25` }}>
+            <div className="dl-role-dot" style={{ background: roleColor }}/>
+            <span style={{ color: roleColor }}>{meta.label}</span>
+          </div>
+        )}
+
+        <div className="dl-sidebar__scroll">
+          <nav className="dl-nav">
+            {visibleNav.map((item, i) => {
+              if ('section' in item) {
+                return sidebarOpen
+                  ? <span key={i} className="dl-nav__section">{item.section}</span>
+                  : <div key={i} className="dl-nav__divider"/>;
+              }
+              const Icon = item.icon;
+              return (
+                <NavLink key={item.path + item.label} to={item.path}
+                  end={item.path === '/dashboard' || item.path === '/dashboard/ngo'}
+                  className={({ isActive }) => `dl-nav__item ${isActive ? 'dl-nav__item--active' : ''}`}>
+                  <Icon size={18} strokeWidth={1.8}/>
+                  {sidebarOpen && <span>{item.label}</span>}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
 
-        <div className="sidebar-footer">
-          <div className="pro-upgrade-card">
-            <div className="pro-header">
-              <div className="crown-icon">🏥</div>
-              <h4>MoH God-View</h4>
+        <div className="dl-sidebar__foot">
+          {sidebarOpen ? (
+            <div className="dl-user">
+              <div className="dl-user__avatar" style={{ background: `linear-gradient(135deg, ${roleColor}, ${roleColor}cc)` }}>
+                {profile?.full_name?.[0] ?? 'U'}
+              </div>
+              <div className="dl-user__info">
+                <span className="dl-user__name">{profile?.full_name ?? 'User'}</span>
+                <span className="dl-user__role" style={{ color: roleColor }}>{meta.label}</span>
+              </div>
+              <button className="dl-user__logout" onClick={handleSignOut} title="Sign out">
+                <LogOut size={15}/>
+              </button>
             </div>
-            <p>Real-time national surveillance across all 11 regions.</p>
-            <button className="btn-upgrade">
-              Open Live Map <span>→</span>
+          ) : (
+            <button className="dl-user__logout-mini" onClick={handleSignOut} title="Sign out">
+              <LogOut size={16}/>
             </button>
-          </div>
+          )}
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="main-content">
-        <header className="top-header">
-          <div className="search-bar">
-            <Search size={18} className="search-icon" />
-            <input type="text" placeholder="Search anything..." />
-            <span className="search-shortcut">⌘K</span>
+      {/* ── MAIN ── */}
+      <main className="dl-main">
+        <header className="dl-header">
+          <div className="dl-search">
+            <Search size={16} className="dl-search__icon"/>
+            <input placeholder={meta.searchPlaceholder}/>
+            <span className="dl-search__kbd">⌘K</span>
           </div>
-          
-          <div className="header-actions">
-            <button className="action-btn-primary">
-              <Plus size={18} />
+          <div className="dl-header__actions">
+            <button className="dl-hbtn" title="Notifications">
+              <Bell size={18}/>
+              <span className="dl-notif">3</span>
             </button>
-            <div className="action-btn badge-container">
-              <Bell size={18} />
-              <span className="notification-badge">8</span>
-            </div>
-            <button className="action-btn">
-              <Mail size={18} />
-            </button>
-            
-            <div className="user-profile">
-              <img src="https://ui-avatars.com/api/?name=MoH+Analyst&background=ede9fe&color=5c59f0" alt="MoH Analyst" className="avatar-img" />
-              <div className="user-info">
-                <span className="user-name">MoH Analyst</span>
-                <span className="user-role">National Dashboard</span>
+            {can('use_healthbot') && (
+              <button className="dl-hbtn dl-hbtn--primary" onClick={() => navigate('/dashboard/healthbot')}>
+                <MessageCircle size={16}/>
+                TenaBot
+              </button>
+            )}
+            <div className="dl-header__user">
+              <div className="dl-header__avatar" style={{ background: `linear-gradient(135deg, ${roleColor}, ${roleColor}cc)` }}>
+                {profile?.full_name?.[0] ?? 'U'}
               </div>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <span>{profile?.full_name?.split(' ')[0] ?? 'User'}</span>
+              <ChevronDown size={14}/>
             </div>
           </div>
         </header>
 
-        <div className="content-area">
-          <Outlet />
+        <div className="dl-content">
+          <Outlet/>
         </div>
       </main>
     </div>

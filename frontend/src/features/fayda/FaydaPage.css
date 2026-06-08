@@ -1,0 +1,101 @@
+.fayda { display:flex; flex-direction:column; gap:1.25rem; }
+
+.fayda__header h1 { font-size:1.4rem; font-weight:700; color:#0f1f3d; }
+.fayda__header p  { font-size:0.83rem; color:#64748b; margin-top:2px; }
+
+.fayda__kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.fayda__kpi {
+  background:white; border-radius:14px; padding:1rem 1.25rem;
+  border:1px solid #e2eaf6; border-left:4px solid;
+  display:flex; flex-direction:column; gap:0.25rem;
+}
+
+.fayda__lookup { padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem; }
+.fayda__lookup h3 { font-size:1rem; font-weight:700; color:#0f1f3d; }
+.fayda__lookup p  { font-size:0.82rem; color:#64748b; }
+
+.fayda__lookup-form { display:flex; gap:0.75rem; align-items:center; }
+.fayda__lookup-input {
+  flex:1; display:flex; align-items:center; gap:0.5rem;
+  background:#f0f6ff; border:1px solid #dbeafe;
+  border-radius:10px; padding:0.6rem 1rem;
+  color:#93c5fd;
+}
+.fayda__lookup-input input { border:none; background:transparent; outline:none; font-size:0.9rem; color:#0f1f3d; width:100%; font-family:'DM Sans',sans-serif; }
+
+.fayda__quick-picks { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; font-size:0.78rem; color:#64748b; }
+.fayda__quick-btn {
+  font-family:monospace; font-size:0.73rem; color:#2563eb;
+  background:#dbeafe; border:1px solid #bfdbfe;
+  border-radius:6px; padding:0.2rem 0.55rem; cursor:pointer;
+  transition:all 0.15s;
+}
+.fayda__quick-btn:hover { background:#bfdbfe; }
+
+.fayda__not-found {
+  display:flex; align-items:center; gap:1.25rem;
+  padding:1.5rem; background:#fff5f5;
+}
+.fayda__not-found h3 { font-size:1rem; font-weight:600; color:#dc2626; margin-bottom:0.25rem; }
+.fayda__not-found p  { font-size:0.83rem; color:#475569; }
+
+/* Profile card */
+.fayda__profile-card { overflow:hidden; padding:0; }
+.fayda__profile-hero {
+  display:flex; align-items:center; gap:1.5rem;
+  padding:1.5rem 2rem;
+}
+.fayda__profile-avatar {
+  width:72px; height:72px; border-radius:18px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; font-weight:700; flex-shrink:0;
+}
+.fayda__profile-hero-info h2 { font-size:1.25rem; font-weight:700; color:#0f1f3d; margin-bottom:0.5rem; }
+.fayda__profile-badges { display:flex; align-items:center; gap:0.5rem; }
+.fayda__id-badge {
+  display:inline-flex; align-items:center; gap:0.35rem;
+  font-family:monospace; font-size:0.78rem; color:#475569;
+  background:#f1f5f9; padding:0.25rem 0.65rem; border-radius:6px;
+}
+
+.fayda__profile-body { padding:1.5rem 2rem; display:flex; flex-direction:column; gap:1.5rem; }
+.fayda__profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
+.fayda__profile-row {
+  display:flex; align-items:center; gap:0.6rem;
+  padding:0.55rem 0.85rem; background:#f8fbff;
+  border-radius:8px; font-size:0.83rem;
+}
+.fayda__profile-row-icon { color:#93c5fd; display:flex; align-items:center; flex-shrink:0; }
+.fayda__profile-row-label { color:#94a3b8; min-width:100px; font-size:0.78rem; }
+.fayda__profile-row-value { font-weight:600; color:#0f1f3d; }
+
+.fayda__facilities h4 { font-size:0.82rem; font-weight:600; color:#0f1f3d; margin-bottom:0.6rem; }
+.fayda__facility-tag {
+  display:inline-flex; align-items:center; gap:0.4rem;
+  font-size:0.8rem; color:#334155;
+  background:#f0fdf4; border:1px solid #bbf7d0;
+  border-radius:7px; padding:0.3rem 0.75rem; margin:0.2rem 0.2rem 0 0;
+}
+
+/* All table */
+.fayda__all { overflow:hidden; padding:0; }
+.fayda__all-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.5rem; border-bottom:1px solid #e2eaf6;
+}
+.fayda__all-header h3 { font-size:0.95rem; font-weight:700; color:#0f1f3d; }
+
+.fayda__table { width:100%; border-collapse:collapse; }
+.fayda__table th {
+  padding:0.65rem 1.25rem; text-align:left;
+  font-size:0.72rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8;
+  background:#f8fbff; border-bottom:1px solid #e2eaf6;
+}
+.fayda__table td {
+  padding:0.8rem 1.25rem; font-size:0.84rem; color:#334155;
+  border-bottom:1px solid #f0f6ff; vertical-align:middle;
+}
+.fayda__table-row { cursor:pointer; transition:background 0.15s; }
+.fayda__table-row:hover { background:#f8fbff; }
+.fayda__table-row:last-child td { border-bottom:none; }

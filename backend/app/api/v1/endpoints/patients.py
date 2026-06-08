@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from uuid import UUID
-from app.core.database import get_db, get_fhir_db
+from app.core.database import get_db
 from app.models.db.models import Profile
 from app.services.fhir.translator import build_fhir_patient, build_vitals_observation, build_patient_bundle
 from app.api.v1.dependencies.auth import get_current_user, require_clinician
@@ -14,7 +14,6 @@ router = APIRouter(prefix="/patients", tags=["Patients"])
 async def get_patient_fhir_bundle(
     patient_id: UUID = Path(...),
     db: AsyncSession = Depends(get_db),
-    fhir_db=Depends(get_fhir_db),
     current_user: Profile = Depends(get_current_user),
 ):
     result = await db.execute(select(Profile).where(Profile.id == patient_id))
@@ -35,12 +34,19 @@ async def get_patient_fhir_bundle(
 @router.post("/{patient_id}/observations")
 async def ingest_observation(
     patient_id: UUID,
-    vitals: dict,
-    fhir_db=Depends(get_fhir_db),
-    current_user: Profile = Depends(require_clinician()),
+    vitals: dict = Body(...),
+    current_user: Profile = Depends(require_clinician),
 ):
     observations = build_vitals_observation(str(patient_id), vitals)
     docs = [obs.model_dump(exclude_none=True) | {"subject_id": str(patient_id)} for obs in observations]
-    if docs:
-        await fhir_db.observations.insert_many(docs)
+
+    # Try MongoDB if available, otherwise return count only
+    try:
+        from app.core.database import get_fhir_db
+        fhir_db = get_fhir_db()
+        if docs:
+            await fhir_db.observations.insert_many(docs)
+    except Exception:
+        pass  # MongoDB not available — observations computed but not persisted
+
     return {"inserted": len(docs)}

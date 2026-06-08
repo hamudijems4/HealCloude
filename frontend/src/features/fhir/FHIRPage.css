@@ -1,0 +1,96 @@
+.fhir { display:flex; flex-direction:column; gap:1.25rem; }
+
+.fhir__header { display:flex; justify-content:space-between; align-items:flex-start; }
+.fhir__header h1 { font-size:1.4rem; font-weight:700; color:#0f1f3d; }
+.fhir__header p  { font-size:0.83rem; color:#64748b; margin-top:2px; }
+
+.fhir__kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.fhir__kpi {
+  background:white; border-radius:14px; padding:1rem 1.25rem;
+  border:1px solid #e2eaf6; border-left:4px solid;
+  display:flex; flex-direction:column; gap:0.25rem;
+}
+
+.fhir__toolbar {
+  display:flex; align-items:center; gap:1rem;
+  padding:1rem 1.25rem; flex-wrap:wrap;
+}
+.fhir__patient-select { display:flex; align-items:center; gap:0.5rem; }
+.fhir__patient-select label { font-size:0.78rem; font-weight:600; color:#64748b; white-space:nowrap; }
+.fhir__patient-select select {
+  padding:0.4rem 0.75rem; border:1px solid #dbeafe; border-radius:8px;
+  font-size:0.82rem; font-family:'DM Sans',sans-serif; color:#334155;
+  outline:none; cursor:pointer; background:white;
+}
+.fhir__patient-select select:focus { border-color:#2563eb; }
+
+.fhir__search {
+  display:flex; align-items:center; gap:0.5rem;
+  flex:1; background:#f0f6ff; border:1px solid #dbeafe;
+  border-radius:8px; padding:0.45rem 0.75rem;
+  color:#93c5fd;
+}
+.fhir__search input { border:none; background:transparent; outline:none; font-size:0.83rem; color:#0f1f3d; width:100%; font-family:'DM Sans',sans-serif; }
+
+.fhir__type-pills { display:flex; gap:0.4rem; flex-wrap:wrap; }
+.fhir__type-pill {
+  display:inline-flex; align-items:center; gap:0.3rem;
+  padding:0.25rem 0.65rem; border-radius:50px;
+  font-size:0.72rem; font-weight:500; border:1px solid;
+}
+.fhir__type-pill strong { font-weight:700; }
+
+.fhir__copy-all { font-size:0.8rem; white-space:nowrap; display:flex; align-items:center; gap:0.4rem; }
+
+.fhir__bundle { overflow:hidden; padding:0; }
+.fhir__bundle-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.5rem; border-bottom:1px solid #e2eaf6;
+  background:#f8fbff;
+}
+.fhir__bundle-title { display:flex; align-items:center; gap:0.6rem; font-weight:600; color:#0f1f3d; font-size:0.95rem; }
+.fhir__bundle-meta { font-size:0.75rem; color:#94a3b8; font-weight:400; font-family:monospace; }
+
+.fhir__entries { display:flex; flex-direction:column; }
+.fhir__empty { padding:2.5rem; text-align:center; color:#94a3b8; font-size:0.9rem; }
+
+.fhir__resource { border-bottom:1px solid #f0f6ff; }
+.fhir__resource:last-child { border-bottom:none; }
+
+.fhir__resource-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0.85rem 1.5rem; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background 0.15s;
+}
+.fhir__resource-header:hover { background:#f8fbff; }
+
+.fhir__resource-left { display:flex; align-items:center; gap:0.65rem; }
+.fhir__resource-chevron { display:flex; align-items:center; }
+.fhir__resource-icon {
+  width:26px; height:26px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.fhir__resource-type { font-size:0.88rem; font-weight:600; }
+.fhir__resource-id { font-size:0.78rem; color:#94a3b8; font-family:monospace; margin-left:2px; }
+
+.fhir__resource-actions { display:flex; align-items:center; gap:0.6rem; }
+.fhir__status-badge { font-size:0.7rem; padding:0.15rem 0.55rem; border-radius:50px; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+
+.fhir__copy-btn {
+  width:26px; height:26px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid #e2eaf6; background:white; color:#64748b; cursor:pointer;
+  transition:all 0.15s;
+}
+.fhir__copy-btn:hover { background:#f0f6ff; color:#2563eb; border-color:#bfdbfe; }
+
+.fhir__resource-body { background:#f8fbff; padding:0 1.5rem 1rem; }
+.fhir__json {
+  font-family:'JetBrains Mono','Fira Code',monospace;
+  font-size:0.75rem; color:#334155; line-height:1.6;
+  overflow-x:auto; margin:0;
+  background:#f1f5f9; border-radius:8px;
+  padding:1rem; border:1px solid #e2eaf6;
+  white-space:pre;
+}

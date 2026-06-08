@@ -1,0 +1,101 @@
+.ph { display:flex; flex-direction:column; gap:1.25rem; }
+
+.ph__header { display:flex; justify-content:space-between; align-items:flex-start; }
+.ph__header h1 { font-size:1.4rem; font-weight:700; color:#0f1f3d; }
+.ph__header p  { font-size:0.83rem; color:#64748b; margin-top:2px; }
+
+.ph__top { display:grid; grid-template-columns:220px 1fr auto; gap:1.25rem; align-items:start; }
+
+/* Score card */
+.ph__score-card {
+  padding:1.5rem; display:flex; flex-direction:column;
+  align-items:center; gap:0.75rem; text-align:center;
+}
+.ph__score-label { font-size:0.78rem; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; }
+.ph__score-ring { position:relative; width:110px; height:110px; }
+.ph__score-ring svg { width:100%; height:100%; }
+.ph__score-val {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.ph__score-val span { font-size:1.8rem; font-weight:700; line-height:1; }
+.ph__score-val small { font-size:0.65rem; color:#94a3b8; }
+.ph__condition { font-size:0.78rem; color:#64748b; }
+
+/* Appointment card */
+.ph__appt-card { padding:1.5rem; display:flex; flex-direction:column; gap:0.5rem; }
+.ph__card-title {
+  display:flex; align-items:center; gap:0.5rem;
+  font-size:0.82rem; font-weight:700; color:#0f1f3d;
+  margin-bottom:0.25rem;
+}
+.ph__appt-date { font-size:1.25rem; font-weight:700; color:#0f1f3d; }
+.ph__appt-type { font-size:0.88rem; color:#475569; font-weight:500; }
+.ph__appt-meta { display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:#64748b; }
+.ph__appt-btn { margin-top:0.5rem; }
+
+/* Quick stats */
+.ph__stats-col { display:flex; flex-direction:column; gap:0.75rem; }
+.ph__stat-pill { padding:0.85rem 1rem; display:flex; align-items:center; gap:0.75rem; }
+.ph__stat-icon { font-size:1.2rem; }
+.ph__stat-label { font-size:0.68rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.04em; }
+.ph__stat-value { font-size:0.9rem; font-weight:700; margin-top:1px; }
+
+/* Risks */
+.ph__risks { padding:1.25rem 1.5rem; }
+.ph__risks-list { display:flex; flex-direction:column; gap:0.5rem; margin-top:0.75rem; }
+.ph__risk-item {
+  display:flex; align-items:center; gap:0.6rem;
+  padding:0.6rem 0.85rem; background:#fef9f0;
+  border-left:3px solid; border-radius:0 8px 8px 0;
+  font-size:0.83rem; color:#334155;
+}
+
+/* Bottom */
+.ph__bottom { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+
+.ph__visit-card { padding:1.5rem; }
+.ph__visit-date { font-size:0.95rem; font-weight:700; color:#0f1f3d; margin-top:0.5rem; }
+.ph__visit-facility { font-size:0.8rem; color:#64748b; margin-bottom:0.35rem; }
+.ph__visit-notes { font-size:0.82rem; color:#475569; line-height:1.5; }
+
+.ph__actions-card { padding:1.5rem; }
+.ph__actions { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.75rem; }
+.ph__action-btn {
+  display:flex; align-items:center; gap:0.75rem;
+  padding:0.85rem 1.1rem; border-radius:10px;
+  border:none; cursor:pointer; font-size:0.88rem; font-weight:600;
+  font-family:'DM Sans',sans-serif; transition:opacity 0.15s;
+  text-align:left;
+}
+.ph__action-btn:hover { opacity:0.85; }
+
+.ph__loading {
+  padding:3rem; text-align:center; color:#94a3b8; font-size:0.9rem;
+}
+
+.ph__ai-note {
+  font-size:0.75rem; color:#64748b; line-height:1.5;
+  text-align:center; margin-top:0.25rem;
+}
+
+.ph__ai-badge {
+  font-size:0.7rem; background:#ede9fe; color:#7c3aed;
+  padding:0.2rem 0.6rem; border-radius:50px; display:inline-block; margin-top:0.25rem;
+}
+
+.ph__no-appt {
+  font-size:0.82rem; color:#94a3b8; line-height:1.6; padding:0.5rem 0;
+}
+
+.ph__bottom { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+
+.ph__info-card { padding:1.5rem; }
+.ph__identity-rows { display:flex; flex-direction:column; gap:0.5rem; margin-top:0.75rem; }
+.ph__identity-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0.5rem 0.75rem; background:#f8fbff; border-radius:8px;
+  font-size:0.82rem;
+}
+.ph__identity-label { color:#94a3b8; font-size:0.75rem; }
+.ph__identity-value { font-weight:600; color:#0f1f3d; }
