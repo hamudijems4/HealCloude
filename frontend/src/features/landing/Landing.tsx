@@ -436,6 +436,35 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* ── WHO IT SERVES ── */}
+      <section className="lp-section lp-who">
+        <div className="lp-section__inner">
+          <div className="lp-section__hd">
+            <span className="lp-tag">For Every Ethiopian</span>
+            <h2>From Bole to the Bush</h2>
+            <p>One platform. 126 million lives. Zero left behind.</p>
+          </div>
+          <div className="lp-who__grid">
+            {[
+              { emoji:'🏦', from:'Bankers in Bole',       to:'tracking chronic conditions from their phone'          },
+              { emoji:'🌾', from:'Farmers in Afar',       to:'receiving malaria alerts via USSD on a 2G feature phone'},
+              { emoji:'👩🍼', from:'Mothers in Tigray',   to:'getting prenatal reminders before a missed appointment' },
+              { emoji:'🩺', from:'Doctors in Jimma',      to:'seeing a unified patient record the moment they walk in' },
+              { emoji:'🏕️', from:'HEWs in Gambella',     to:'recording data offline and syncing when back in range'  },
+              { emoji:'📊', from:'Analysts in Addis',     to:'watching a live disease map before outbreaks spread'    },
+            ].map((w, i) => (
+              <div key={i} className="lp-who__card">
+                <span className="lp-who__emoji">{w.emoji}</span>
+                <div>
+                  <span className="lp-who__from">{w.from}</span>
+                  <span className="lp-who__to">{w.to}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="lp-cta">
         <div className="lp-cta__inner">
