@@ -11,6 +11,7 @@
 [![ALX Hackathon](https://img.shields.io/badge/ALX-Wellness%20Hackathon%202024-2563eb?style=for-the-badge)](https://www.alxafrica.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
+[![Expo](https://img.shields.io/badge/Expo-56-000020?style=for-the-badge&logo=expo)](https://expo.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![FHIR](https://img.shields.io/badge/HL7-FHIR%20R4-E84035?style=for-the-badge)](https://hl7.org/fhir)
 
@@ -67,6 +68,15 @@ cloudheal/
 │       ├── rbac/           # Role-based access (patient/clinician/MoH/NGO)
 │       └── store/          # Zustand auth store
 │
+├── mobile-app/             # Expo React Native App
+│   ├── App.tsx             # Main app with navigation
+│   └── src/
+│       ├── screens/        # Login, Dashboard, Chat, Profile screens
+│       ├── context/        # Auth context provider
+│       ├── services/       # API service layer
+│       ├── config/         # API configuration
+│       └── types/          # TypeScript type definitions
+│
 ├── backend/                # FastAPI + Python 3.12
 │   └── app/
 │       ├── api/v1/
@@ -87,12 +97,19 @@ cloudheal/
 
 ## Tech Stack
 
-**Frontend**
+**Frontend (Web)**
 - React 19, TypeScript, Vite 8
 - React Leaflet (live disease map)
 - Recharts (wellness sparklines)
 - Zustand (auth state)
 - Role-Based Access Control (RBAC) with 6 roles
+
+**Mobile App**
+- Expo SDK 56, React Native 0.85
+- React Navigation (native stack + bottom tabs)
+- AsyncStorage for token persistence
+- Axios for API communication
+- TypeScript for type safety
 
 **Backend**
 - FastAPI, SQLAlchemy 2 (async), Pydantic v2
@@ -150,13 +167,50 @@ npm run dev        # http://localhost:5173
 cd backend
 python -m venv .venv
 source .venv/Scripts/activate   # Windows
+source .venv/bin/activate       # macOS/Linux
 pip install -r requirements.txt
 uvicorn app.main:app --reload   # http://localhost:8000
 ```
 
+### 5. Mobile App (Expo)
+```bash
+cd mobile-app
+npm install
+
+# Start Expo development server
+npx expo start
+
+# Run on specific platform
+npx expo start --android    # Android emulator
+npx expo start --ios        # iOS simulator
+
+# Configure API URL in mobile-app/src/config/api.ts
+# For Android emulator: http://10.0.2.2:8000
+# For iOS simulator: http://localhost:8000
+# For physical device: http://YOUR_COMPUTER_IP:8000
+```
+
 ---
 
-## Key API Endpoints
+---
+
+## Mobile App Features
+
+The mobile app provides core CloudHeal functionality on mobile devices:
+
+| Screen | Features |
+|---|---|
+| 🔐 **Login** | Fayda ID / email / phone authentication with demo credentials |
+| 🏠 **Dashboard** | Role-based home screen with stats, quick actions, recent activity |
+| 💬 **TenaBot Chat** | AI health assistant conversation interface |
+| 👤 **Profile** | User info, wellness score visualization, recommendations |
+
+**Navigation Structure:**
+- Bottom tab navigation (Home, Chat, Profile)
+- Secure authentication flow
+- Auto token refresh with AsyncStorage
+
+---
 
 ```
 POST   /api/v1/auth/login                    Login (email / Fayda ID / phone)
@@ -196,6 +250,27 @@ vercel
 VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJ...
 VITE_API_URL=https://your-backend-url.com
+```
+
+---
+
+## Build Mobile App for Production
+
+```bash
+cd mobile-app
+
+# Build for Android
+npx expo build:android
+# or use EAS Build (recommended)
+npx eas build --platform android
+
+# Build for iOS
+npx expo build:ios
+# or use EAS Build (recommended)
+npx eas build --platform ios
+
+# Preview build locally
+npx expo start --no-dev --minify
 ```
 
 ---
