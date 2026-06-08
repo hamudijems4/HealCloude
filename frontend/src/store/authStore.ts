@@ -52,7 +52,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   loadProfile: async (userId: string) => {
-    // Retry up to 3 times — session propagation can be async
     for (let i = 0; i < 3; i++) {
       const { data, error } = await supabase
         .from('profiles')
@@ -60,8 +59,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         .eq('id', userId)
         .single();
       if (data) { set({ profile: data as Profile }); return; }
-      if (error?.code === 'PGRST116') break; // row not found — no point retrying
-      await new Promise(r => setTimeout(r, 400));
+      if (error?.code === 'PGRST116') break;
+      await new Promise(r => setTimeout(r, 500));
     }
   },
 
