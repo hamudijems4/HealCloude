@@ -47,30 +47,36 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     supabase.auth.onAuthStateChange(async (_event, session) => {
       set({ user: session?.user ?? null, session });
       if (session?.user) await get().loadProfile(session.user.id);
-      else set({ profile: null });
+      else set({ profile: null, loading: false });
     });
   },
 
   loadProfile: async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, full_name, role, fayda_id, phone, region, woreda, facility_id, gender, date_of_birth, avatar_url')
-      .eq('id', userId)
-      .single();
-    if (data) set({ profile: data as Profile });
+    // Retry up to 3 times — session propagation can be async
+    for (let i = 0; i < 3; i++) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, role, fayda_id, phone, region, woreda, facility_id, gender, date_of_birth, avatar_url')
+        .eq('id', userId)
+        .single();
+      if (data) { set({ profile: data as Profile }); return; }
+      if (error?.code === 'PGRST116') break; // row not found — no point retrying
+      await new Promise(r => setTimeout(r, 400));
+    }
   },
 
   signIn: async (email: string, password: string) => {
     const identifier = email.trim();
     const isEmail = identifier.includes('@');
 
-    // Pure email login — go direct to Supabase (faster, no backend needed)
     if (isEmail) {
-      const { error } = await supabase.auth.signInWithPassword({ email: identifier, password });
-      return error ? error.message : null;
+      const { data, error } = await supabase.auth.signInWithPassword({ email: identifier, password });
+      if (error) return error.message;
+      // Store session immediately so loadProfile has auth context
+      if (data.session) set({ session: data.session, user: data.user });
+      return null;
     }
 
-    // Fayda ID (ET + digits) or phone — hit the backend which resolves to email
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: 'POST',
@@ -80,13 +86,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const data = await res.json();
       if (!res.ok) return data.detail ?? 'Login failed';
 
-      // Backend returned tokens — hydrate Supabase session so the rest of the
-      // app (RLS, realtime) works normally
-      const { error } = await supabase.auth.setSession({
+      const { data: sessionData, error } = await supabase.auth.setSession({
         access_token:  data.access_token,
         refresh_token: data.refresh_token,
       });
-      return error ? error.message : null;
+      if (error) return error.message;
+      if (sessionData.session) set({ session: sessionData.session, user: sessionData.user });
+      return null;
     } catch {
       return 'Backend unavailable — please use your email address to log in.';
     }
