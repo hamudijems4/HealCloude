@@ -44,7 +44,6 @@ create table if not exists public.facilities (
   is_online     boolean not null default true,
   fhir_endpoint text,
   phone         text,
-  beds          integer,
   created_at    timestamptz not null default now()
 );
 
@@ -246,24 +245,24 @@ create trigger profiles_updated_at
   for each row execute procedure public.set_updated_at();
 
 -- ── 14. Seed: Facilities ────────────────────────────────────────────────────
-insert into public.facilities (name, type, region, zone, woreda, latitude, longitude, beds)
+insert into public.facilities (name, type, region, zone, woreda, latitude, longitude)
 values
-  ('Black Lion Specialized Hospital',  'hospital',      'Addis Ababa', 'Addis Ababa', 'Gulele',    9.0302, 38.7468, 700),
-  ('St. Paul Hospital',                'hospital',      'Addis Ababa', 'Addis Ababa', 'Gulele',    9.0411, 38.7578, 400),
-  ('Tikur Anbessa Hospital',           'hospital',      'Addis Ababa', 'Addis Ababa', 'Kirkos',    9.0227, 38.7526, 800),
-  ('Adwa Health Center',               'health_center', 'Tigray',      'Central',     'Adwa',     14.1690, 38.8960, 40),
-  ('Mekelle General Hospital',         'hospital',      'Tigray',      'Central',     'Mekelle',  13.4970, 39.4770, 350),
-  ('Hawassa University Hospital',      'hospital',      'Sidama',      'Hawassa',     'Hawassa',   7.0550, 38.4770, 450),
-  ('Gondar University Hospital',       'hospital',      'Amhara',      'North Gondar','Gondar',   12.6080, 37.4610, 500),
-  ('Jimma University Hospital',        'hospital',      'Oromia',      'Jimma',       'Jimma',     7.6750, 36.8340, 480),
-  ('Nekemte Referral Hospital',        'hospital',      'Oromia',      'East Wollega','Nekemte',   9.0880, 36.5490, 200),
-  ('Assosa General Hospital',          'hospital',      'Benishangul', 'Assosa',      'Assosa',   10.0650, 34.5350, 150),
-  ('Gambella Regional Hospital',       'hospital',      'Gambella',    'Gambella',    'Gambella',  8.2520, 34.5890, 120),
-  ('Dire Dawa Referral Hospital',      'hospital',      'Dire Dawa',   'Dire Dawa',   'Dire Dawa', 9.5930, 41.8620, 250),
-  ('Harar Regional Hospital',          'hospital',      'Harari',      'Harari',      'Harar',     9.3120, 42.1180, 180),
-  ('Jijiga General Hospital',          'hospital',      'Somali',      'Erer',        'Jijiga',    9.3500, 42.7900, 200),
-  ('Semera Regional Hospital',         'hospital',      'Afar',        'Zone 1',      'Semera',   11.7930, 41.0110, 160),
-  ('Arba Minch General Hospital',      'hospital',      'SNNPR',       'Gamo',        'Arba Minch',6.0380, 37.5500, 220)
+  ('Black Lion Specialized Hospital',  'hospital',      'Addis Ababa', 'Addis Ababa', 'Gulele',    9.0302, 38.7468),
+  ('St. Paul Hospital',                'hospital',      'Addis Ababa', 'Addis Ababa', 'Gulele',    9.0411, 38.7578),
+  ('Tikur Anbessa Hospital',           'hospital',      'Addis Ababa', 'Addis Ababa', 'Kirkos',    9.0227, 38.7526),
+  ('Adwa Health Center',               'health_center', 'Tigray',      'Central',     'Adwa',     14.1690, 38.8960),
+  ('Mekelle General Hospital',         'hospital',      'Tigray',      'Central',     'Mekelle',  13.4970, 39.4770),
+  ('Hawassa University Hospital',      'hospital',      'Sidama',      'Hawassa',     'Hawassa',   7.0550, 38.4770),
+  ('Gondar University Hospital',       'hospital',      'Amhara',      'North Gondar','Gondar',   12.6080, 37.4610),
+  ('Jimma University Hospital',        'hospital',      'Oromia',      'Jimma',       'Jimma',     7.6750, 36.8340),
+  ('Nekemte Referral Hospital',        'hospital',      'Oromia',      'East Wollega','Nekemte',   9.0880, 36.5490),
+  ('Assosa General Hospital',          'hospital',      'Benishangul', 'Assosa',      'Assosa',   10.0650, 34.5350),
+  ('Gambella Regional Hospital',       'hospital',      'Gambella',    'Gambella',    'Gambella',  8.2520, 34.5890),
+  ('Dire Dawa Referral Hospital',      'hospital',      'Dire Dawa',   'Dire Dawa',   'Dire Dawa', 9.5930, 41.8620),
+  ('Harar Regional Hospital',          'hospital',      'Harari',      'Harari',      'Harar',     9.3120, 42.1180),
+  ('Jijiga General Hospital',          'hospital',      'Somali',      'Erer',        'Jijiga',    9.3500, 42.7900),
+  ('Semera Regional Hospital',         'hospital',      'Afar',        'Zone 1',      'Semera',   11.7930, 41.0110),
+  ('Arba Minch General Hospital',      'hospital',      'SNNPR',       'Gamo',        'Arba Minch',6.0380, 37.5500)
 on conflict do nothing;
 
 -- ── 15. Demo profiles ───────────────────────────────────────────────────────
