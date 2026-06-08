@@ -54,6 +54,7 @@ const FHIRPage          = lazy(() => import('../features/fhir/FHIRPage').then(m 
 const USSDPage          = lazy(() => import('../features/ussd/USSDPage').then(m => ({ default: m.USSDPage })));
 const ReportsPage       = lazy(() => import('../features/reports/ReportsPage').then(m => ({ default: m.ReportsPage })));
 const SettingsPage      = lazy(() => import('../features/settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const AdminPage         = lazy(() => import('../features/admin/AdminPage').then(m => ({ default: m.AdminPage })));
 
 export const router = createBrowserRouter([
   { path: '/',      element: w(Landing) },
@@ -155,6 +156,10 @@ export const router = createBrowserRouter([
         {
           path: 'settings',
           element: <RoleGuard require="view_settings">{w(SettingsPage)}</RoleGuard>,
+        },
+        {
+          path: 'admin',
+          element: <RoleGuard require="manage_users">{w(AdminPage)}</RoleGuard>,
         },
       ],
     }],

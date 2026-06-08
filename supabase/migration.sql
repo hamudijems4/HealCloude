@@ -244,7 +244,7 @@ create trigger profiles_updated_at
   before update on public.profiles
   for each row execute procedure public.set_updated_at();
 
--- ── 14. Seed: Facilities ────────────────────────────────────────────────────
+-- ── 17. Seed: Facilities ────────────────────────────────────────────────────
 insert into public.facilities (name, type, region, zone, woreda, latitude, longitude)
 values
   ('Black Lion Specialized Hospital',  'hospital',      'Addis Ababa', 'Addis Ababa', 'Gulele',    9.0302, 38.7468),
@@ -265,14 +265,23 @@ values
   ('Arba Minch General Hospital',      'hospital',      'SNNPR',       'Gamo',        'Arba Minch',6.0380, 37.5500)
 on conflict do nothing;
 
--- ── 15. Demo profiles ───────────────────────────────────────────────────────
+-- ── 15. Patch existing tables (safe to re-run) ────────────────────────────
+alter table public.profiles         add column if not exists preferred_lang text not null default 'en' check (preferred_lang in ('en','am','om','ti'));
+alter table public.appointments     add column if not exists sms_sent_at timestamptz;
+alter table public.ussd_sessions    add column if not exists lang         text not null default 'en';
+alter table public.ussd_sessions    add column if not exists duration_sec integer;
+alter table public.disease_alerts   add column if not exists trend_pct    double precision default 0;
+alter table public.disease_alerts   add column if not exists latitude     double precision;
+alter table public.disease_alerts   add column if not exists longitude    double precision;
+
+-- ── 16. Demo profiles ───────────────────────────────────────────────────────
 -- Create users in: Dashboard → Authentication → Users (email: moh@cloudheal.et, clinic@cloudheal.et, almaz@cloudheal.et)
 -- Password: Demo@2024, then run:
 
 update public.profiles set
   full_name = 'Tigist Haile', role = 'moh_analyst',
   fayda_id = 'ET0000000001', phone = '+251911000001',
-  gender = 'female', region = 'Addis Ababa', preferred_lang = 'am'
+  gender = 'female', region = 'Addis Ababa'
 where id = (select id from auth.users where email = 'moh@cloudheal.et');
 
 update public.profiles set
@@ -286,10 +295,10 @@ update public.profiles set
   full_name = 'Almaz Tesfaye', role = 'patient',
   fayda_id = 'ET8823710293', phone = '+251922334455',
   gender = 'female', date_of_birth = '1996-03-15',
-  region = 'Tigray', woreda = 'Adwa', preferred_lang = 'am'
+  region = 'Tigray', woreda = 'Adwa'
 where id = (select id from auth.users where email = 'almaz@cloudheal.et');
 
--- ── 16. Seed: Wellness scores ───────────────────────────────────────────────
+-- ── 18. Seed: Wellness scores ───────────────────────────────────────────────
 insert into public.wellness_scores (patient_id, score, risk_level, risk_factors, ai_notes)
 select p.id, 62.5, 'medium',
   '{"missed_followups":2,"low_iron":true,"gestational_age_weeks":32}'::jsonb,
@@ -297,7 +306,7 @@ select p.id, 62.5, 'medium',
 from public.profiles p where p.fayda_id = 'ET8823710293'
 on conflict do nothing;
 
--- ── 17. Seed: Appointments ──────────────────────────────────────────────────
+-- ── 19. Seed: Appointments ──────────────────────────────────────────────────
 insert into public.appointments (patient_id, facility_id, scheduled_at, status, appointment_type, ai_scheduled, ussd_notified)
 select
   p.id,
@@ -312,7 +321,12 @@ where p.fayda_id = 'ET8823710293'
   and f.name = 'Adwa Health Center'
 on conflict do nothing;
 
--- ── 18. Seed: Disease alerts ────────────────────────────────────────────────
+-- ── 20. Seed: Disease alerts ────────────────────────────────────────────────
+-- Add new columns if table already existed from a previous run
+alter table public.disease_alerts add column if not exists trend_pct  double precision default 0;
+alter table public.disease_alerts add column if not exists latitude   double precision;
+alter table public.disease_alerts add column if not exists longitude  double precision;
+
 insert into public.disease_alerts (region, zone, disease, severity, case_count, trend_pct, latitude, longitude, alert_date)
 values
   ('Oromia',     'East Hararghe', 'Acute Watery Diarrhea', 'critical', 342, 18.0,  9.30, 42.12, current_date - 1),
@@ -325,7 +339,7 @@ values
   ('Benishangul','Metekel',       'Malaria',               'watch',     76,  3.0, 10.75, 35.55, current_date - 5)
 on conflict do nothing;
 
--- ── 19. Seed: USSD sessions ─────────────────────────────────────────────────
+-- ── 21. Seed: USSD sessions ─────────────────────────────────────────────────
 insert into public.ussd_sessions (session_id, phone, lang, input, response, duration_sec)
 values
   ('SESS001', '+251922334455', 'am', '1 → 1', 'Confirmed appointment',    72),
@@ -335,7 +349,7 @@ values
   ('SESS005', '+251977001122', 'am', '5 → 2', 'Language → Amharic',       12)
 on conflict do nothing;
 
--- ── 20. Seed: Notifications ─────────────────────────────────────────────────
+-- ── 22. Seed: Notifications ─────────────────────────────────────────────────
 insert into public.notifications (patient_id, channel, message, sent, sent_at)
 select p.id, 'sms',
   'CloudHeal: ቀጠሮዎ በ15 ሰኔ 2025 9:00 ጠ.ቀ. ነው - አድዋ ጤና ጣቢያ። Reply 1 to confirm.',

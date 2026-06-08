@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Activity, MapPin, AlertTriangle,
   HeartPulse, Building2, Smartphone, Calendar, PieChart,
   Settings, Bell, Search, LogOut, MessageCircle,
-  ChevronDown, Menu, X, Heart, FileText,
+  ChevronDown, Menu, X, Heart, FileText, ShieldAlert,
 } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { usePermissions } from '../../../rbac/usePermissions';
@@ -69,7 +69,8 @@ const NAV: NavEntry[] = [
 
   // Settings always last
   { section: 'Account' },
-  { icon: Settings,        label: 'Settings',            path: '/dashboard/settings',      require: 'view_settings'       },
+  { icon: ShieldAlert,     label: 'User Management',    path: '/dashboard/admin',     require: 'manage_users'        },
+  { icon: Settings,        label: 'Settings',            path: '/dashboard/settings',  require: 'view_settings'       },
 ];
 
 const ROLE_COLORS: Record<string, string> = {
