@@ -196,7 +196,7 @@ export const Landing: React.FC = () => {
           <div className="lp-hero__left">
             <div className="lp-hero__badge">
               <span className="lp-badge__dot"/>
-              ALX Wellness Hackathon 2024
+              ALX Wellness Hackathon 2026
             </div>
 
             <h1 className="lp-hero__title">
@@ -513,7 +513,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
         <div className="lp-footer__bottom">
-          <p>© 2024 CloudHeal · ALX Wellness Hackathon · Built with ❤️ for Ethiopia's 126 million people</p>
+          <p>© 2026 CloudHeal · ALX Wellness Hackathon · Built with ❤️ for Ethiopia's 126 million people</p>
           <div className="lp-footer__badges">
             {['FHIR R4','HIPAA Ready','GDPR Compliant','ALX 2024'].map(b => (
               <span key={b} className="lp-footer__badge">{b}</span>
