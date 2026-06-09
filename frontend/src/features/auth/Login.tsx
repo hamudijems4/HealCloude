@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Eye, EyeOff, Copy, Check, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import './Login.css';
 
@@ -13,10 +13,10 @@ const EthiopianLogo = () => (
 );
 
 const DEMO = [
-  { role: 'MoH Analyst', email: 'moh@cloudheal.et',    password: 'Demo@2024', color: '#2563eb' },
-  { role: 'Clinician',   email: 'clinic@cloudheal.et', password: 'Demo@2024', color: '#0891b2' },
-  { role: 'Patient',     email: 'almaz@cloudheal.et',  password: 'Demo@2024', color: '#059669' },
-  { role: 'NGO Analyst', email: 'ngo@cloudheal.et',    password: 'Demo@2024', color: '#d97706' },
+  { role: 'MoH Analyst', icon: '🏛️', sub: 'moh@cloudheal.et',    email: 'moh@cloudheal.et',    password: 'Demo@2024', color: '#2563eb' },
+  { role: 'Clinician',   icon: '🏥', sub: 'clinic@cloudheal.et', email: 'clinic@cloudheal.et', password: 'Demo@2024', color: '#0891b2' },
+  { role: 'Patient',     icon: '👤', sub: 'ET8823710293',         email: 'ET8823710293',         password: 'Demo@2024', color: '#059669' },
+  { role: 'NGO Analyst', icon: '🌍', sub: 'ngo@cloudheal.et',    email: 'ngo@cloudheal.et',    password: 'Demo@2024', color: '#d97706' },
 ];
 
 export const Login: React.FC = () => {
@@ -27,7 +27,6 @@ export const Login: React.FC = () => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
-  const [copied, setCopied]     = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +38,6 @@ export const Login: React.FC = () => {
   };
 
   const fill = (c: typeof DEMO[0]) => { setEmail(c.email); setPassword(c.password); setError(null); };
-
-  const copy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 1500);
-  };
 
   return (
     <div className="login-wrap">
@@ -61,23 +54,14 @@ export const Login: React.FC = () => {
           <span className="demo-label">Demo Access — click any role to fill</span>
           <div className="demo-cards">
             {DEMO.map((c) => (
-              <div key={c.role} className="demo-card" style={{ borderColor: `${c.color}30`, cursor: 'pointer' }}
-                onClick={() => fill(c)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && fill(c)}>
-                <span className="demo-role" style={{ color: c.color }}>{c.role}</span>
-                <div className="demo-cred-row">
-                  <span className="demo-cred-val">{c.email}</span>
-                  <button className="demo-copy" type="button"
-                    onClick={(e) => { e.stopPropagation(); copy(c.email, c.role + 'e'); }}>
-                    {copied === c.role + 'e' ? <Check size={11}/> : <Copy size={11}/>}
-                  </button>
-                </div>
-                <div className="demo-cred-row">
-                  <span className="demo-cred-val">{c.password}</span>
-                  <button className="demo-copy" type="button"
-                    onClick={(e) => { e.stopPropagation(); copy(c.password, c.role + 'p'); }}>
-                    {copied === c.role + 'p' ? <Check size={11}/> : <Copy size={11}/>}
-                  </button>
-                </div>
+              <div key={c.role}
+                className={`demo-card ${email === c.email ? 'demo-card--active' : ''}`}
+                style={{ borderColor: `${c.color}40` }}
+                onClick={() => fill(c)} role="button" tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && fill(c)}>
+                <span className="demo-card__icon">{c.icon}</span>
+                <span className="demo-card__role" style={{ color: c.color }}>{c.role}</span>
+                <span className="demo-card__sub">{c.sub}</span>
               </div>
             ))}
           </div>
@@ -98,7 +82,7 @@ export const Login: React.FC = () => {
             <div className="input-wrapper">
               <Mail className="input-icon" size={17}/>
               <input type="text" className="input-field with-icon"
-                placeholder="email@cloudheal.et"
+                placeholder="email@cloudheal.et or ET..."
                 value={email} onChange={e => setEmail(e.target.value)} required/>
             </div>
           </div>
@@ -114,12 +98,6 @@ export const Login: React.FC = () => {
                 {showPass ? <EyeOff size={17}/> : <Eye size={17}/>}
               </button>
             </div>
-          </div>
-          <div className="form-actions">
-            <label className="checkbox-label">
-              <input type="checkbox"/><span>Remember me</span>
-            </label>
-            <a href="#" className="forgot-link">Forgot password?</a>
           </div>
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? <span className="login-spinner"/> : <><span>Sign In</span><ArrowRight size={18}/></>}

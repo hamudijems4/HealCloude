@@ -67,10 +67,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // --- DEMO BYPASS ---
     if (identifier.includes('cloudheal.et') && password === 'Demo@2024') {
       const prefix = identifier.split('@')[0].toLowerCase();
-      let role = 'clinician';
+      let role = 'clinic';
       let name = 'Dr. Demo';
-      if (prefix === 'moh') { role = 'moh_analyst'; name = 'MoH Analyst'; }
-      if (prefix === 'ngo') { role = 'ngo_analyst'; name = 'NGO Analyst'; }
+      if (prefix === 'moh')   { role = 'moh';     name = 'MoH Analyst'; }
+      if (prefix === 'ngo')   { role = 'ngo';     name = 'NGO Analyst'; }
       if (prefix === 'almaz') { role = 'patient'; name = 'Almaz T.'; }
 
       set({
