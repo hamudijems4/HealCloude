@@ -1,4 +1,4 @@
-So till the backend finishes installing, which will definielty take a while let's do our role.
+The dashboard is not opening like we agreed to make it map ya but ...
 
 Quick reminder:
 This project is targeting 4 type of users as customers.
@@ -8,3 +8,6 @@ This project is targeting 4 type of users as customers.
 4. GOV- MoH - We will provide the GOV with structured data for research and and also disease analysis (The gov will be able to know if a disease is about to spread because this also connects hospitals and hospitals store data using the patients fayda ID (which will have the location and may data) so the MoH sees if a disease is about to spread in a region)
 
 * Note: The pages must match the roles.
+We need a very much stronger RBAS
+Pages that must not be included in the role:
+MoH - Appointements (it's for health care), USSD (page only for patients), NGO dashboard as the name indicates it's a page created for NGO role, 

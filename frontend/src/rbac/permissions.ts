@@ -1,37 +1,35 @@
-export type Role =
-  | 'patient'
-  | 'clinician'
-  | 'facility_admin'
-  | 'moh_analyst'
-  | 'ngo_analyst'
-  | 'super_admin';
+export type Role = 'patient' | 'clinic' | 'ngo' | 'moh' | 'super_admin';
 
 export type Permission =
-  // Personal (patient-only)
+  // Patient
   | 'view_own_health'
   | 'view_own_appointments'
   | 'view_own_wellness'
-  // Clinical
+  | 'view_ussd'
+  | 'manage_ussd'
+  // Clinic
   | 'view_all_patients'
+  | 'view_all_wellness'
   | 'view_patient_detail'
   | 'view_fhir_records'
   | 'manage_appointments'
-  | 'view_all_wellness'
-  // Surveillance (MoH / NGO)
+  | 'fayda_lookup'
+  // NGO
+  | 'view_research_maps'
+  | 'view_heatmaps'
+  | 'view_funding_allocation'
+  | 'identify_high_need_areas'
+  // MoH
   | 'view_disease_map'
   | 'view_disease_alerts'
   | 'manage_alerts'
-  // Infrastructure
+  | 'view_epidemiology'
   | 'view_facilities'
-  | 'view_ussd'
-  | 'manage_ussd'
-  // Analytics
   | 'view_reports'
   | 'view_moh_dashboard'
-  // AI
-  | 'use_healthbot'
-  // Platform
+  // Shared
   | 'view_settings'
+  | 'use_healthbot'
   | 'manage_users';
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
@@ -39,73 +37,61 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_own_health',
     'view_own_appointments',
     'view_own_wellness',
-    'use_healthbot',
-    'view_settings',
-  ],
-
-  clinician: [
-    'view_all_patients',
-    'view_patient_detail',
-    'view_fhir_records',
-    'manage_appointments',
-    'view_all_wellness',
-    'view_facilities',
-    'use_healthbot',
-    'view_settings',
-  ],
-
-  facility_admin: [
-    'view_all_patients',
-    'view_patient_detail',
-    'view_fhir_records',
-    'manage_appointments',
-    'view_all_wellness',
-    'view_facilities',
     'view_ussd',
     'manage_ussd',
+    'use_healthbot',
+    'view_settings',
+  ],
+  clinic: [
+    'view_all_patients',
+    'view_all_wellness',
+    'view_patient_detail',
+    'view_fhir_records',
+    'manage_appointments',
+    'fayda_lookup',
+    'view_disease_map',
+    'use_healthbot',
+    'view_settings',
+  ],
+  ngo: [
+    'view_research_maps',
+    'view_heatmaps',
+    'view_funding_allocation',
+    'identify_high_need_areas',
+    'view_facilities',
     'view_reports',
     'view_settings',
   ],
-
-  moh_analyst: [
-    'view_all_patients',
-    'view_patient_detail',
-    'view_fhir_records',
-    'manage_appointments',
-    'view_all_wellness',
+  moh: [
     'view_disease_map',
     'view_disease_alerts',
     'manage_alerts',
+    'view_epidemiology',
     'view_facilities',
-    'view_ussd',
     'view_reports',
     'view_moh_dashboard',
     'view_settings',
   ],
-
-  ngo_analyst: [
-    'view_disease_map',
-    'view_disease_alerts',
-    'view_facilities',
-    'view_reports',
-    'view_settings',
-  ],
-
   super_admin: [
     'view_own_health',
     'view_own_appointments',
     'view_own_wellness',
+    'view_ussd',
+    'manage_ussd',
     'view_all_patients',
     'view_patient_detail',
     'view_fhir_records',
     'manage_appointments',
-    'view_all_wellness',
+    'fayda_lookup',
+    'view_research_maps',
+    'view_heatmaps',
+    'view_funding_allocation',
+    'identify_high_need_areas',
     'view_disease_map',
     'view_disease_alerts',
     'manage_alerts',
+    'view_epidemiology',
     'view_facilities',
-    'view_ussd',
-    'manage_ussd',
     'view_reports',
     'view_moh_dashboard',
     'use_healthbot',
@@ -122,22 +108,18 @@ export function can(role: Role, permission: Permission): boolean {
   return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
 }
 
-/** The home route each role lands on after login */
 export const ROLE_HOME: Record<Role, string> = {
-  patient:        '/dashboard/my-health',
-  clinician:      '/dashboard/my-patients',
-  facility_admin: '/dashboard/patients',
-  moh_analyst:    '/dashboard',
-  ngo_analyst:    '/dashboard/ngo',
-  super_admin:    '/dashboard',
+  patient: '/dashboard/my-health',
+  clinic:  '/dashboard/patients',
+  ngo:     '/dashboard/research',
+  moh:     '/dashboard/surveillance',
+  super_admin: '/dashboard/surveillance',
 };
 
-/** Display config per role */
-export const ROLE_META: Record<Role, { label: string; color: string; badge: string; searchPlaceholder: string }> = {
-  patient:        { label: 'Patient Portal',          color: '#059669', badge: 'bg-green',  searchPlaceholder: 'Search your records…'              },
-  clinician:      { label: 'Clinician View',           color: '#0891b2', badge: 'bg-cyan',   searchPlaceholder: 'Search patients by name or ID…'    },
-  facility_admin: { label: 'Facility Admin',           color: '#7c3aed', badge: 'bg-purple', searchPlaceholder: 'Search patients, facilities…'      },
-  moh_analyst:    { label: 'MoH National Dashboard',  color: '#2563eb', badge: 'bg-blue',   searchPlaceholder: 'Search patients, facilities, alerts…'},
-  ngo_analyst:    { label: 'NGO Research View',        color: '#d97706', badge: 'bg-amber',  searchPlaceholder: 'Search regions, diseases…'         },
-  super_admin:    { label: 'Super Admin',              color: '#dc2626', badge: 'bg-red',    searchPlaceholder: 'Search anything…'                  },
+export const ROLE_META: Record<Role, { label: string; color: string; icon: string; searchPlaceholder?: string }> = {
+  patient:     { label: 'Patient Portal',  color: '#059669', icon: '👤', searchPlaceholder: 'Search health records...' },
+  clinic:      { label: 'Clinic Network',  color: '#0891b2', icon: '🏥', searchPlaceholder: 'Search by Fayda ID...' },
+  ngo:         { label: 'NGO Research',    color: '#d97706', icon: '🌍', searchPlaceholder: 'Search regions, facilities...' },
+  moh:         { label: 'MoH Command',     color: '#2563eb', icon: '🏛️', searchPlaceholder: 'Search regions, alerts...' },
+  super_admin: { label: 'Super Admin',     color: '#dc2626', icon: '⚙️', searchPlaceholder: 'Search anything...' },
 };

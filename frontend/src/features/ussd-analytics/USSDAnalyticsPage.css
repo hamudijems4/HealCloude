@@ -1,0 +1,116 @@
+.ua { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.ua__header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; }
+.ua__header h1 { font-size: 1.4rem; font-weight: 700; color: #0f1f3d; font-family: 'Cormorant Garamond', serif; }
+.ua__header p  { font-size: 0.83rem; color: #64748b; margin-top: 2px; }
+
+.ua__live-badge {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: #0f1f3d; color: white; font-size: 0.78rem; font-weight: 700;
+  padding: 0.45rem 1rem; border-radius: 50px; letter-spacing: 0.03em;
+}
+.ua__live-tag {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.72rem; font-weight: 700; color: #22c55e;
+}
+.ua__live-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
+  animation: ua-pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes ua-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+.ua__kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.ua__kpi {
+  background: white; border-radius: 14px; padding: 1rem 1.25rem;
+  border: 1px solid #e2eaf6; border-left: 4px solid;
+  display: flex; align-items: center; gap: 0.85rem;
+}
+.ua__kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ua__kpi-val  { display: block; font-size: 1.3rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ua__kpi-lbl  { display: block; font-size: 0.72rem; color: #64748b; margin-top: 1px; }
+.ua__kpi-sub  { display: block; font-size: 0.68rem; color: #94a3b8; margin-top: 1px; }
+
+.ua__top  { display: grid; grid-template-columns: 1fr 300px; gap: 1.25rem; }
+.ua__mid  { display: grid; grid-template-columns: 1fr 280px; gap: 1.25rem; }
+.ua__bottom { display: grid; grid-template-columns: 280px 1fr; gap: 1.25rem; }
+
+.ua__card { padding: 0; overflow: hidden; }
+.ua__card--wide { }
+
+.ua__card-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 1.1rem 1.5rem 0.5rem;
+}
+.ua__card-head h3 { font-size: 0.95rem; font-weight: 700; color: #0f1f3d; }
+.ua__card-head p  { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+
+/* Language donut */
+.ua__donut-wrap { position: relative; padding: 0 1rem; display: flex; align-items: center; justify-content: center; }
+.ua__donut-center {
+  position: absolute; display: flex; flex-direction: column; align-items: center; pointer-events: none;
+}
+.ua__donut-center span  { font-size: 1.3rem; font-weight: 700; color: #0f1f3d; }
+.ua__donut-center small { font-size: 0.68rem; color: #94a3b8; }
+.ua__lang-legend { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.5rem 1.5rem 1rem; }
+.ua__lang-legend div { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #475569; }
+.ua__lang-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ua__lang-legend strong { margin-left: auto; font-weight: 700; }
+
+/* Regions */
+.ua__regions { padding: 0.5rem 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.7rem; }
+.ua__region-row { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: #334155; }
+.ua__region-row > span:first-child { width: 90px; flex-shrink: 0; }
+.ua__region-track { flex: 1; height: 7px; background: #f0f6ff; border-radius: 50px; overflow: hidden; }
+.ua__region-fill  { height: 100%; border-radius: 50px; transition: width 0.6s ease; }
+.ua__region-row > span:last-child  { width: 48px; text-align: right; font-size: 0.75rem; flex-shrink: 0; }
+
+/* Menus */
+.ua__menus { padding: 0.5rem 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.ua__menu-row { display: flex; align-items: center; gap: 0.75rem; }
+.ua__menu-rank { width: 20px; height: 20px; background: #f0f6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #2563eb; flex-shrink: 0; }
+.ua__menu-info { flex: 1; min-width: 0; }
+.ua__menu-name { display: block; font-size: 0.8rem; color: #334155; font-weight: 500; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ua__menu-track { height: 5px; background: #f0f6ff; border-radius: 50px; overflow: hidden; }
+.ua__menu-fill  { height: 100%; background: linear-gradient(90deg, #2563eb, #3b82f6); border-radius: 50px; }
+.ua__menu-stats { display: flex; flex-direction: column; align-items: flex-end; gap: 0.1rem; flex-shrink: 0; }
+.ua__menu-stats span { font-size: 0.75rem; color: #64748b; }
+.ua__menu-pct { font-weight: 700; color: #2563eb !important; }
+
+/* Live feed */
+.ua__feed { display: flex; flex-direction: column; }
+.ua__feed-row {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.7rem 1.25rem;
+  border-bottom: 1px solid #f0f6ff;
+  transition: background 0.3s;
+}
+.ua__feed-row:last-child { border-bottom: none; }
+.ua__feed-row--new { background: #f0f6ff; animation: ua-slide-in 0.4s ease; }
+@keyframes ua-slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ua__feed-lang {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+.ua__feed-info { flex: 1; min-width: 0; }
+.ua__feed-phone { display: block; font-size: 0.82rem; font-weight: 600; color: #0f1f3d; font-family: monospace; }
+.ua__feed-menu  { display: block; font-size: 0.72rem; color: #64748b; }
+.ua__feed-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem; flex-shrink: 0; }
+.ua__feed-status { font-size: 0.72rem; font-weight: 600; color: #94a3b8; }
+.ua__feed-status--active { color: #22c55e; }
+.ua__feed-time { font-size: 0.68rem; color: #94a3b8; }
+
+@media (max-width: 1024px) {
+  .ua__kpis  { grid-template-columns: repeat(2, 1fr); }
+  .ua__top   { grid-template-columns: 1fr; }
+  .ua__mid   { grid-template-columns: 1fr; }
+  .ua__bottom { grid-template-columns: 1fr; }
+}

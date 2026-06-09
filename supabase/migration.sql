@@ -10,11 +10,17 @@ create extension if not exists "pg_trgm";
 -- ── 2. Enums ────────────────────────────────────────────────────────────────
 do $$ begin
   create type user_role as enum (
-    'patient','clinician','facility_admin','moh_analyst','ngo_analyst','super_admin'
+    'patient','clinician','clinic','facility_admin','moh_analyst','moh','ngo_analyst','ngo','super_admin'
   );
 exception when duplicate_object then null; end $$;
 
-do $$ begin alter type user_role add value if not exists 'ngo_analyst';
+do $$ begin alter type user_role add value if not exists 'clinic';
+exception when others then null; end $$;
+
+do $$ begin alter type user_role add value if not exists 'moh';
+exception when others then null; end $$;
+
+do $$ begin alter type user_role add value if not exists 'ngo';
 exception when others then null; end $$;
 
 do $$ begin
@@ -275,22 +281,33 @@ alter table public.disease_alerts   add column if not exists latitude     double
 alter table public.disease_alerts   add column if not exists longitude    double precision;
 
 -- ── 16. Demo profiles ───────────────────────────────────────────────────────
--- Create users in: Dashboard → Authentication → Users (email: moh@cloudheal.et, clinic@cloudheal.et, almaz@cloudheal.et)
+-- Create users in: Dashboard → Authentication → Users
+-- Emails: moh@cloudheal.et, clinic@cloudheal.et, ngo@cloudheal.et, almaz@cloudheal.et
 -- Password: Demo@2024, then run:
 
+-- MoH Analyst
 update public.profiles set
-  full_name = 'Tigist Haile', role = 'moh_analyst',
+  full_name = 'Tigist Haile', role = 'moh',
   fayda_id = 'ET0000000001', phone = '+251911000001',
   gender = 'female', region = 'Addis Ababa'
 where id = (select id from auth.users where email = 'moh@cloudheal.et');
 
+-- Clinic
 update public.profiles set
-  full_name = 'Dr. Kebede Alemu', role = 'clinician',
+  full_name = 'Dr. Kebede Alemu', role = 'clinic',
   fayda_id = 'ET0000000002', phone = '+251911000002',
   gender = 'male', region = 'Addis Ababa',
   facility_id = (select id from public.facilities where name = 'Black Lion Specialized Hospital' limit 1)
 where id = (select id from auth.users where email = 'clinic@cloudheal.et');
 
+-- NGO Analyst
+update public.profiles set
+  full_name = 'Sara Johnson', role = 'ngo',
+  fayda_id = 'ET0000000003', phone = '+251911000003',
+  gender = 'female', region = 'Addis Ababa'
+where id = (select id from auth.users where email = 'ngo@cloudheal.et');
+
+-- Patient
 update public.profiles set
   full_name = 'Almaz Tesfaye', role = 'patient',
   fayda_id = 'ET8823710293', phone = '+251922334455',

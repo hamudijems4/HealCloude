@@ -32,54 +32,51 @@ interface NavSection {
 type NavEntry = NavItem | NavSection;
 
 const NAV: NavEntry[] = [
-  // MoH / super_admin national view
-  { section: 'Overview' },
-  { icon: LayoutDashboard, label: 'National Dashboard',  path: '/dashboard',              require: 'view_moh_dashboard'  },
-  { icon: PieChart,        label: 'Reports',             path: '/dashboard/reports',       require: 'view_reports'        },
-
-  // NGO research
-  { section: 'Research' },
-  { icon: LayoutDashboard, label: 'NGO Dashboard',       path: '/dashboard/ngo',           require: 'view_disease_map'    },
-
-  // Patient personal
+  // Patient
   { section: 'My Health' },
-  { icon: Heart,           label: 'My Health',           path: '/dashboard/my-health',     require: 'view_own_health'     },
-  { icon: Calendar,        label: 'My Appointments',     path: '/dashboard/my-appointments',require:'view_own_appointments'},
-  { icon: HeartPulse,      label: 'My Wellness',         path: '/dashboard/my-wellness',   require: 'view_own_wellness'   },
+  { icon: Heart,           label: 'My Health',        path: '/dashboard/my-health',       require: 'view_own_health'       },
+  { icon: Calendar,        label: 'Appointments',     path: '/dashboard/my-appointments', require: 'view_own_appointments' },
+  { icon: HeartPulse,      label: 'Wellness Score',   path: '/dashboard/my-wellness',     require: 'view_own_wellness'     },
+  { icon: Smartphone,      label: 'USSD / SMS',       path: '/dashboard/ussd',            require: 'view_ussd'             },
+  { icon: MessageCircle,   label: 'TenaBot AI',       path: '/dashboard/healthbot',       require: 'use_healthbot'         },
 
-  // Clinician / facility
-  { section: 'Patients & Care' },
-  { icon: Users,           label: 'Patient Queue',       path: '/dashboard/my-patients',   require: 'view_all_patients'   },
-  { icon: Users,           label: 'All Patients',        path: '/dashboard/patients',      require: 'view_all_patients'   },
-  { icon: Calendar,        label: 'Appointments',        path: '/dashboard/appointments',  require: 'manage_appointments' },
-  { icon: HeartPulse,      label: 'Wellness Scores',     path: '/dashboard/wellness',      require: 'view_all_wellness'   },
-  { icon: MessageCircle,   label: 'HealthBot AI',        path: '/dashboard/healthbot',     require: 'use_healthbot'       },
+  // Clinic
+  { section: 'Patient Care' },
+  { icon: Users,           label: 'Patients',         path: '/dashboard/patients',        require: 'view_all_patients'     },
+  { icon: Calendar,        label: 'Appointments',     path: '/dashboard/appointments',    require: 'manage_appointments'   },
+  { icon: Activity,        label: 'FHIR Records',     path: '/dashboard/fhir',            require: 'view_fhir_records'     },
+  { icon: MapPin,          label: 'Disease Map',      path: '/dashboard/disease-map',     require: 'view_disease_map'      },
+  { icon: MessageCircle,   label: 'TenaBot AI',       path: '/dashboard/healthbot',       require: 'use_healthbot'         },
 
-  // Surveillance
+  // NGO
+  { section: 'Research' },
+  { icon: LayoutDashboard, label: 'Research Dashboard', path: '/dashboard/research',    require: 'view_research_maps'   },
+  { icon: Heart,           label: 'Maternal Health',    path: '/dashboard/maternal',    require: 'view_heatmaps'        },
+  { icon: Users,           label: 'Population Insights',path: '/dashboard/population',  require: 'view_heatmaps'        },
+  { icon: FileText,        label: 'Reports',            path: '/dashboard/reports',     require: 'view_reports'         },
+  { icon: Building2,       label: 'Facilities',         path: '/dashboard/facilities',  require: 'view_facilities'      },
+
+  // MoH
   { section: 'Surveillance' },
-  { icon: MapPin,          label: 'Disease Map',         path: '/dashboard/disease-map',   require: 'view_disease_map'    },
-  { icon: AlertTriangle,   label: 'Disease Alerts',      path: '/dashboard/alerts',        require: 'view_disease_alerts' },
+  { icon: MapPin,          label: 'Disease Map',        path: '/dashboard/disease-map', require: 'view_disease_map'     },
+  { icon: AlertTriangle,   label: 'Outbreak Alerts',    path: '/dashboard/alerts',      require: 'view_disease_alerts'  },
+  { icon: Activity,        label: 'Epidemiology',       path: '/dashboard/epidemiology',require: 'view_epidemiology'    },
+  { icon: Smartphone,      label: 'USSD Analytics',     path: '/dashboard/ussd-analytics', require: 'view_epidemiology' },
+  { icon: Building2,       label: 'Facilities',         path: '/dashboard/facilities',  require: 'view_facilities'      },
+  { icon: PieChart,        label: 'National Reports',   path: '/dashboard/reports',     require: 'view_reports'         },
 
-  // Infrastructure
-  { section: 'Infrastructure' },
-  { icon: Building2,       label: 'Health Facilities',   path: '/dashboard/facilities',    require: 'view_facilities'     },
-  { icon: Smartphone,      label: 'USSD / SMS',          path: '/dashboard/ussd',          require: 'view_ussd'           },
-  { icon: Activity,        label: 'FHIR Records',        path: '/dashboard/fhir',          require: 'view_fhir_records'   },
-  { icon: FileText,        label: 'Reports',             path: '/dashboard/reports',       require: 'view_reports'        },
-
-  // Settings always last
+  // Account (all roles)
   { section: 'Account' },
-  { icon: ShieldAlert,     label: 'User Management',    path: '/dashboard/admin',     require: 'manage_users'        },
-  { icon: Settings,        label: 'Settings',            path: '/dashboard/settings',  require: 'view_settings'       },
+  { icon: ShieldAlert,     label: 'User Management',  path: '/dashboard/admin',           require: 'manage_users'          },
+  { icon: Settings,        label: 'Settings',         path: '/dashboard/settings',        require: 'view_settings'         },
 ];
 
 const ROLE_COLORS: Record<string, string> = {
-  patient:        '#059669',
-  clinician:      '#0891b2',
-  facility_admin: '#7c3aed',
-  moh_analyst:    '#2563eb',
-  ngo_analyst:    '#d97706',
-  super_admin:    '#dc2626',
+  patient:     '#059669',
+  clinic:      '#0891b2',
+  ngo:         '#d97706',
+  moh:         '#2563eb',
+  super_admin: '#dc2626',
 };
 
 export const DashboardLayout: React.FC = () => {

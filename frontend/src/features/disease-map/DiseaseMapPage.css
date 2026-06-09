@@ -36,12 +36,12 @@
 .dmp__kpi--total    svg, .dmp__kpi--total    span { color:#7c3aed; }
 
 /* Body */
-.dmp__body { display:grid; grid-template-columns:1fr 340px; gap:1.25rem; flex:1; min-height:0; }
+.dmp__body { display:grid; grid-template-columns:1fr 300px; gap:1.25rem; flex:1; min-height:0; }
 
 /* Map */
 .dmp__map-wrap {
   position:relative; overflow:hidden;
-  height:calc(100vh - 320px); min-height:420px;
+  height:calc(100vh - 260px); min-height:520px;
 }
 
 .dmp__legend {

@@ -11,9 +11,12 @@ import enum
 class UserRole(str, enum.Enum):
     PATIENT = "patient"
     CLINICIAN = "clinician"
+    CLINIC = "clinic"           # Healthcare facility
     FACILITY_ADMIN = "facility_admin"
     MOH_ANALYST = "moh_analyst"
+    MOH = "moh"                 # Ministry of Health
     NGO_ANALYST = "ngo_analyst"
+    NGO = "ngo"                 # NGO Research
     SUPER_ADMIN = "super_admin"
 
 

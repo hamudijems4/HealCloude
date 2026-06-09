@@ -8,7 +8,7 @@ import {
   Zap, Shield, HeartPulse
 } from 'lucide-react';
 import {
-  AreaChart, Area, ResponsiveContainer
+  AreaChart, Area
 } from 'recharts';
 import './Dashboard.css';
 
@@ -151,15 +151,13 @@ export const Dashboard: React.FC = () => {
             <span className="moh__kpi-trend moh__kpi-trend--up"><TrendingUp size={11}/> +3.2% this month</span>
           </div>
           <div className="moh__kpi-spark">
-            <ResponsiveContainer width="100%" height={40}>
-              <AreaChart data={SPARKLINE.map(v => ({ v }))}>
-                <defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0}/>
-                </linearGradient></defs>
-                <Area type="monotone" dataKey="v" stroke="#3b82f6" strokeWidth={2} fill="url(#sg1)" dot={false}/>
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart width={120} height={40} data={SPARKLINE.map(v => ({ v }))}>
+              <defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0}/>
+              </linearGradient></defs>
+              <Area type="monotone" dataKey="v" stroke="#3b82f6" strokeWidth={2} fill="url(#sg1)" dot={false}/>
+            </AreaChart>
           </div>
         </div>
 
@@ -171,15 +169,13 @@ export const Dashboard: React.FC = () => {
             <span className="moh__kpi-trend moh__kpi-trend--danger"><Zap size={11}/> {totalCases.toLocaleString()} total cases</span>
           </div>
           <div className="moh__kpi-spark">
-            <ResponsiveContainer width="100%" height={40}>
-              <AreaChart data={[8,12,10,15,13,18,16,22,19,24,21,28].map(v => ({ v }))}>
-                <defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4}/>
-                  <stop offset="100%" stopColor="#ef4444" stopOpacity={0}/>
-                </linearGradient></defs>
-                <Area type="monotone" dataKey="v" stroke="#ef4444" strokeWidth={2} fill="url(#sg2)" dot={false}/>
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart width={120} height={40} data={[8,12,10,15,13,18,16,22,19,24,21,28].map(v => ({ v }))}>
+              <defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4}/>
+                <stop offset="100%" stopColor="#ef4444" stopOpacity={0}/>
+              </linearGradient></defs>
+              <Area type="monotone" dataKey="v" stroke="#ef4444" strokeWidth={2} fill="url(#sg2)" dot={false}/>
+            </AreaChart>
           </div>
         </div>
 
@@ -191,15 +187,13 @@ export const Dashboard: React.FC = () => {
             <span className="moh__kpi-trend moh__kpi-trend--up"><TrendingUp size={11}/> +9.4% vs yesterday</span>
           </div>
           <div className="moh__kpi-spark">
-            <ResponsiveContainer width="100%" height={40}>
-              <AreaChart data={[30,35,28,42,38,45,40,52,47,56,50,62].map(v => ({ v }))}>
-                <defs><linearGradient id="sg3" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4}/>
-                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0}/>
-                </linearGradient></defs>
-                <Area type="monotone" dataKey="v" stroke="#8b5cf6" strokeWidth={2} fill="url(#sg3)" dot={false}/>
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart width={120} height={40} data={[30,35,28,42,38,45,40,52,47,56,50,62].map(v => ({ v }))}>
+              <defs><linearGradient id="sg3" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4}/>
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0}/>
+              </linearGradient></defs>
+              <Area type="monotone" dataKey="v" stroke="#8b5cf6" strokeWidth={2} fill="url(#sg3)" dot={false}/>
+            </AreaChart>
           </div>
         </div>
 
@@ -211,15 +205,13 @@ export const Dashboard: React.FC = () => {
             <span className="moh__kpi-trend moh__kpi-trend--up"><TrendingUp size={11}/> *961# active</span>
           </div>
           <div className="moh__kpi-spark">
-            <ResponsiveContainer width="100%" height={40}>
-              <AreaChart data={[20,25,22,30,27,33,29,38,34,42,38,48].map(v => ({ v }))}>
-                <defs><linearGradient id="sg4" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4}/>
-                  <stop offset="100%" stopColor="#22c55e" stopOpacity={0}/>
-                </linearGradient></defs>
-                <Area type="monotone" dataKey="v" stroke="#22c55e" strokeWidth={2} fill="url(#sg4)" dot={false}/>
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart width={120} height={40} data={[20,25,22,30,27,33,29,38,34,42,38,48].map(v => ({ v }))}>
+              <defs><linearGradient id="sg4" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4}/>
+                <stop offset="100%" stopColor="#22c55e" stopOpacity={0}/>
+              </linearGradient></defs>
+              <Area type="monotone" dataKey="v" stroke="#22c55e" strokeWidth={2} fill="url(#sg4)" dot={false}/>
+            </AreaChart>
           </div>
         </div>
 
@@ -234,15 +226,13 @@ export const Dashboard: React.FC = () => {
             <span className="moh__kpi-trend moh__kpi-trend--up"><Shield size={11}/> 93.3% uptime</span>
           </div>
           <div className="moh__kpi-spark">
-            <ResponsiveContainer width="100%" height={40}>
-              <AreaChart data={[90,91,89,92,88,93,91,94,92,95,93,96].map(v => ({ v }))}>
-                <defs><linearGradient id="sg5" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0891b2" stopOpacity={0.4}/>
-                  <stop offset="100%" stopColor="#0891b2" stopOpacity={0}/>
-                </linearGradient></defs>
-                <Area type="monotone" dataKey="v" stroke="#0891b2" strokeWidth={2} fill="url(#sg5)" dot={false}/>
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart width={120} height={40} data={[90,91,89,92,88,93,91,94,92,95,93,96].map(v => ({ v }))}>
+              <defs><linearGradient id="sg5" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0891b2" stopOpacity={0.4}/>
+                <stop offset="100%" stopColor="#0891b2" stopOpacity={0}/>
+              </linearGradient></defs>
+              <Area type="monotone" dataKey="v" stroke="#0891b2" strokeWidth={2} fill="url(#sg5)" dot={false}/>
+            </AreaChart>
           </div>
         </div>
 
@@ -274,7 +264,7 @@ export const Dashboard: React.FC = () => {
             >
               <ZoomControl position="bottomright"/>
               <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; CARTO'
               />
 
