@@ -65,13 +65,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const isEmail = identifier.includes('@');
 
     // --- DEMO BYPASS ---
-    if (identifier.includes('cloudheal.et') && password === 'Demo@2024') {
-      const prefix = identifier.split('@')[0].toLowerCase();
+    if ((identifier.includes('cloudheal.et') || identifier === 'ET8823710293') && password === 'Demo@2024') {
+      const prefix = identifier.includes('@') ? identifier.split('@')[0].toLowerCase() : identifier;
       let role = 'clinic';
       let name = 'Dr. Demo';
-      if (prefix === 'moh')   { role = 'moh';     name = 'MoH Analyst'; }
-      if (prefix === 'ngo')   { role = 'ngo';     name = 'NGO Analyst'; }
-      if (prefix === 'almaz') { role = 'patient'; name = 'Almaz T.'; }
+      if (prefix === 'moh')            { role = 'moh';     name = 'MoH Analyst'; }
+      if (prefix === 'ngo')            { role = 'ngo';     name = 'NGO Analyst'; }
+      if (prefix === 'almaz' || prefix === 'ET8823710293') { role = 'patient'; name = 'Almaz Tesfaye'; }
 
       set({
         user: { id: 'demo-id', email: identifier } as any,
